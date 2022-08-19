@@ -1,0 +1,10 @@
+*.out
+*.exe
+*.o
+
+.vscode/*
+
+doctest.h
+
+# cmake build directories
+/build
