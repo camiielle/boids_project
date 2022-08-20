@@ -1,5 +1,4 @@
 // defines the class Parameters, whose constructor validates input
-
 #ifndef PARAMETERS_HPP
 #define PARAMETERS_HPP
 
@@ -63,9 +62,9 @@ class Parameters
   }
 
  public:
-  explicit Parameters(double angle, double d, double d_s, double s, double c,
-                      double a, double max_speed, double min_speed_fraction,
-                      double duration, int steps, int prescale, int N_boids)
+  Parameters(double angle, double d, double d_s, double s, double c, double a,
+             double max_speed, double min_speed_fraction, double duration,
+             int steps, int prescale, int N_boids)
       : angle{angle}
       , d{d}
       , d_s{d_s}
