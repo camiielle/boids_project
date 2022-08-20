@@ -1,4 +1,4 @@
-// defines the class Parameters, whose constructor validates input
+// defines class Parameters, whose constructor validates input
 #ifndef PARAMETERS_HPP
 #define PARAMETERS_HPP
 
@@ -6,26 +6,26 @@
 #include <stdexcept>
 #include <string>
 
-// SOSTITUISCI RUNTIME_ERROR CON MY_EXCEPTION!!
-// ***<<<<<<********<<<<<********************<<<<<<*********<<<<********
+class Invalid_Parameter : public std::runtime_error
+{
+  using std::runtime_error::runtime_error;
+};
 
-// throws exception if val is not within the (open) range
 template<class T>
 void is_in_range(T val, T val_min, T val_max, std::string par_name)
 {
   if (val <= val_min || val >= val_max) {
-    throw std::runtime_error{"Parameter " + par_name
-                             + " is not in the required range"};
+    throw Invalid_Parameter{"Parameter " + par_name
+                            + " is not in the required range"};
   }
 }
 
-// throws exception if val is smaller than val_min
 template<class T>
 void is_greater_than(T val, T val_min, std::string par_name)
 {
   if (val <= val_min) {
-    throw std::runtime_error{"Parameter " + par_name + " must be greater than "
-                             + std::to_string(val_min)};
+    throw Invalid_Parameter{"Parameter " + par_name + " must be greater than "
+                            + std::to_string(val_min)};
   }
 }
 
@@ -43,7 +43,7 @@ class Parameters
   double min_speed;
   double duration; // duration of the simulation{s}
   int steps;       // evolve flock for [steps] times
-  int prescale;    // register flock state every [prescale] steps
+  int prescale;    // print flock state every [prescale] steps
   int N_boids;
 
   // values set by developer

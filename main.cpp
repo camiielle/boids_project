@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     double angle{300.};
     double d{35.};
     double d_s{3.5};
-    double s{1.};
+    double s{1.5};
     double c{.5};
     double a{.5};
     double max_speed{80};
@@ -40,11 +40,16 @@ int main(int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
+    assert(result && (!show_help));
+
     Parameters const pars{angle,    d,     d_s,       s,
                           c,        a,     max_speed, min_speed_fraction,
                           duration, steps, prescale,  N_boids};
 
-  } catch (std::runtime_error const& err) {
-    std::cerr << "Error: " << err.what() << '\n';
+  std::cout <<"Reached end of program\n";
+
+  } catch (Invalid_Parameter const& err) {
+    std::cerr << "Invalid Parameter: " << err.what() << '\n';
+  } catch (...) { //++++++++++++++ADD CODE HERE++++++++++++++++++++++}
   }
 }
