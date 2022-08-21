@@ -63,3 +63,52 @@ TEST_CASE("testing Vector2D")
     CHECK((norm(v1) - norm(v4)) == doctest::Approx(.0)); // opposite vectors
   }
 }
+
+// functions defined here and not exported anywhere, only to test
+// that overlaoding is performed correctly
+
+// clang-format off
+int test_overload(Vector2D) {return 0;}
+int test_overload(Position) {return 1;}
+int test_overload(Velocity) {return 2;}
+int testing_overload(Vector2D) {return 3;}
+// clang-format on
+
+TEST_CASE("Testing Position and Velocity")
+{
+  Velocity v1{4., 3.};  // oblique vector, speed=5
+  Velocity v2{-3., 0.}; // horizontal vector, speed=3
+  Velocity v3{0., -7.}; // vertical vector, speed=7
+
+  SUBCASE("testing overloading")
+  {
+    Vector2D vec{7., -3};
+    Position pos{1., 1.};
+    CHECK(test_overload(vec) == 0);
+    CHECK(test_overload(pos) == 1);
+    CHECK(test_overload(v1) == 2);
+    CHECK(testing_overload(vec) == 3);
+    CHECK(testing_overload(pos) == 3);
+    CHECK(testing_overload(v1) == 3);
+  }
+  SUBCASE("testing normalize for upper limit")
+  {
+    normalize(v1, .5, 4.); // speed greater than max_speed
+    CHECK(norm(v1) == doctest::Approx(3.8));
+    normalize(v2, .5, 3.); // speed equal to max_speed
+    CHECK(norm(v2) == doctest::Approx(2.85));
+    double norm3{norm(v3)};
+    normalize(v3, .5, 7.1); // speed in range
+    CHECK(norm(v3) == norm3);
+  }
+  SUBCASE("testing normalize for lower limit")
+  {
+    normalize(v1, 6., 25.); // speed smaller than min_speed
+    CHECK(norm(v1) == doctest::Approx(6.3));
+    normalize(v2, 3., 20.); // speed equal to min_speed
+    CHECK(norm(v2) == doctest::Approx(3.15));
+    double norm3{norm(v3)};
+    normalize(v3, .7, 18); // speed in range
+    CHECK(norm(v3) == norm3);
+  }
+}
