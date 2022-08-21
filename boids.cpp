@@ -1,5 +1,4 @@
 #include "boids.hpp"
-#include <cassert>
 
 // Vector2D's overloaded operators
 Vector2D& Vector2D::operator+=(Vector2D const& other)
@@ -57,4 +56,11 @@ Boid::Boid(Position p, Velocity v)
     , v_{v}
 {
   assert(!is_pred_);
+}
+
+double distance(Boid const& b1, Boid const& b2)
+{
+  double xdiff{b1.position().get_x() - b2.position().get_x()};
+  double ydiff{b1.position().get_y() - b2.position().get_y()};
+  return std::sqrt(xdiff * xdiff + ydiff * ydiff);
 }

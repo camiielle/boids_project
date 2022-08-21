@@ -108,3 +108,30 @@ TEST_CASE("Testing Position and Velocity")
     CHECK((normalize(v3, .7, 18)) == v3); // speed in range
   }
 }
+
+TEST_CASE("Testing Boid")
+{
+  Velocity v1{1., 2.};
+  Position p1{2., 2.};
+  Position p2{3., 0.};
+  Position p3{0., 2.};
+  Position p4{};
+  Position p5 = p1 * (-1.);
+
+  Boid b1{p1, v1};
+  Boid b1_p{p1, v1, true};
+  Boid b2{p2, v1};
+  Boid b3{p3, v1};
+  Boid b4{p4, v1};
+  Boid b5{p5, v1, true};
+
+  SUBCASE("testing distance")
+  {
+    CHECK(distance(b1, b2) == doctest::Approx(std::sqrt(5.))); // regular
+    CHECK(distance(b1, b1_p)
+          == doctest::Approx(0.)); // same position, 1 normal boid & 1 predator
+    CHECK(distance(b1, b4) == norm(b1.position())); // null vector
+    CHECK(distance(b1, b3) == doctest::Approx(2.)); // horizontally aligned
+    CHECK(distance(b1, b5) == (2.)*norm(b1.position())); // opposite vectors
+  }
+}
