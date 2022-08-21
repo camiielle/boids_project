@@ -93,22 +93,18 @@ TEST_CASE("Testing Position and Velocity")
   }
   SUBCASE("testing normalize for upper limit")
   {
-    normalize(v1, .5, 4.); // speed greater than max_speed
-    CHECK(norm(v1) == doctest::Approx(3.8));
-    normalize(v2, .5, 3.); // speed equal to max_speed
-    CHECK(norm(v2) == doctest::Approx(2.85));
-    double norm3{norm(v3)};
-    normalize(v3, .5, 7.1); // speed in range
-    CHECK(norm(v3) == norm3);
+    CHECK(norm(normalize(v1, .5, 4.)) // speed greater than max_speed
+          == doctest::Approx(3.8));
+    CHECK(norm(normalize(v2, .5, 3.)) // speed equal to max_speed
+          == doctest::Approx(2.85));
+    CHECK(normalize(v3, .5, 7.1) == v3); // speed in range
   }
   SUBCASE("testing normalize for lower limit")
   {
-    normalize(v1, 6., 25.); // speed smaller than min_speed
-    CHECK(norm(v1) == doctest::Approx(6.3));
-    normalize(v2, 3., 20.); // speed equal to min_speed
-    CHECK(norm(v2) == doctest::Approx(3.15));
-    double norm3{norm(v3)};
-    normalize(v3, .7, 18); // speed in range
-    CHECK(norm(v3) == norm3);
+    CHECK(norm(normalize(v1, 6., 25.)) // speed smaller than min_speed
+          == doctest::Approx(6.3));
+    CHECK(norm(normalize(v2, 3., 20.)) // speed equal to min_speed
+          == doctest::Approx(3.15));
+    CHECK((normalize(v3, .7, 18)) == v3); // speed in range
   }
 }

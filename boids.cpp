@@ -31,7 +31,7 @@ Vector2D& Vector2D::operator*=(double scalar)
   return *this;
 }
 
-void normalize(Velocity& v, double min_speed, double max_speed)
+Velocity& normalize(Velocity& v, double min_speed, double max_speed)
 {
   if (norm(v) >= max_speed) {
     v *= (0.95 * max_speed
@@ -40,4 +40,21 @@ void normalize(Velocity& v, double min_speed, double max_speed)
     v *= 1.05 * min_speed / norm(v); // setting new speed a little above the min
   }
   assert(norm(v) > min_speed && norm(v) < max_speed);
+  return v;
+}
+
+// Boid costructor overloading: 1st one will be used to construct predators, 2nd
+// for regualr boids
+Boid::Boid(Position p, Velocity v, bool is_pred)
+    : p_{p}
+    , v_{v}
+    , is_pred_{is_pred}
+{
+  assert(is_pred_);
+}
+Boid::Boid(Position p, Velocity v)
+    : p_{p}
+    , v_{v}
+{
+  assert(!is_pred_);
 }

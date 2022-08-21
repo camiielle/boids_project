@@ -1,7 +1,6 @@
 #ifndef BOIDS_HPP
 #define BOIDS_HPP
 
-#include <cassert>
 #include <cmath>
 #include <utility>
 
@@ -27,14 +26,30 @@ inline Vector2D operator/ (Vector2D result, double scalar) {return result /= sca
 inline Vector2D operator*(Vector2D result, double scalar) {return result *= scalar;}
 inline double norm(Vector2D const& vector) {return std::sqrt(vector.get_x() * vector.get_x() + vector.get_y() * vector.get_y());}
 
-// Distringuishing b/w vectors w/ different physical meanings (i.e. vector position and vector velocity)
-
+// Distringuishing between vectors with different physical meanings (i.e. vector position and vector velocity)
 struct Position : public Vector2D {using Vector2D::Vector2D;};
 struct Velocity : public Vector2D {using Vector2D::Vector2D;};
-// clang-format on
 
-// keeping speed in the allowed limits (speed is modified, direction remains
-// unalterd):
-void normalize(Velocity& v, double min_speed, double max_speed);
+// keeping speed in the allowed limits (speed modified, direction unaltered)
+Velocity& normalize(Velocity& v, double min_speed, double max_speed);
+
+class Boid
+{
+  Position p_;
+  Velocity v_;
+  bool is_pred_ = false;
+
+ public:
+  Boid(Position p, Velocity v, bool is_pred);
+  Boid(Position p, Velocity v);
+  Position position() const {return p_;}
+  Position& position() {return p_;}
+  Velocity velocity() const {return v_;}
+  Velocity& velocity() {return v_;}
+  //only const method for is_pred_ since predatory nature of a boid
+  //is not meant to be modified after its creation
+  bool is_pred() const {return is_pred_;}
+  // clang-format on
+};
 
 #endif

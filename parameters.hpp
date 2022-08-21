@@ -62,7 +62,7 @@ class Parameters
   }
 
  public:
-  Parameters(double angle, double d, double d_s, double s, double c, double a,
+ explicit Parameters(double angle, double d, double d_s, double s, double c, double a,
              double max_speed, double min_speed_fraction, double duration,
              int steps, int prescale, int N_boids)
       : angle{angle}
