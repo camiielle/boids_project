@@ -9,8 +9,8 @@ int main(int argc, char* argv[])
     double d{35.};
     double d_s{3.5};
     double s{1.5};
-    double c{.5};
-    double a{.5};
+    double c{.1};
+    double a{1.};
     double max_speed{80};
     double min_speed_fraction{.000005};
     double duration{30.};
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
                           c,        a,     max_speed, min_speed_fraction,
                           duration, steps, prescale,  N_boids};
 
-  std::cout <<"Reached end of program\n";
+    std::cout << "Reached end of program\n";
 
   } catch (Invalid_Parameter const& err) {
     std::cerr << "Invalid Parameter: " << err.what() << '\n';

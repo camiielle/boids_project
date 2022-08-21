@@ -24,10 +24,10 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "1.5]")
       | lyra::opt(c, "cohesion-factor")["-c"]["--cohesion_factor"](
           "Set cohesion factor - must be in range (0.,5.)  [Default value is "
-          "0.5]")
+          "0.1]")
       | lyra::opt(a, "alignment-factor")["-a"]["--alignment_factor"](
           "Set alignment factor - must be in range (0.,5.)  [Default value is "
-          "0.5]")
+          "1.0]")
       | lyra::opt(max_speed, "maximum-speed")["-V"]["--maximum_speed"](
           "Set maximum speed - must be greater than 0.  [Default value is 80.]")
       | lyra::opt(min_speed_fraction,
