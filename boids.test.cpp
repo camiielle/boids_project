@@ -117,21 +117,52 @@ TEST_CASE("Testing Boid")
   Position p3{0., 2.};
   Position p4{};
   Position p5 = p1 * (-1.);
-
+  Position p6{2., -6};
   Boid b1{p1, v1};
   Boid b1_p{p1, v1, true};
   Boid b2{p2, v1};
   Boid b3{p3, v1};
   Boid b4{p4, v1};
   Boid b5{p5, v1, true};
+  Boid b6{p6, v1, true};
+  Boid b7{p4, Velocity{4., 4.}, true};
 
   SUBCASE("testing distance")
   {
     CHECK(distance(b1, b2) == doctest::Approx(std::sqrt(5.))); // regular
+    CHECK(distance(b1, b4) == norm(b1.position()));            // null vector
+    CHECK(distance(b1, b3) == doctest::Approx(2.)); // horizontally aligned
+    CHECK(distance(b1, b6) == doctest::Approx(8.)); // vertically aligned
     CHECK(distance(b1, b1_p)
           == doctest::Approx(0.)); // same position, 1 normal boid & 1 predator
-    CHECK(distance(b1, b4) == norm(b1.position())); // null vector
-    CHECK(distance(b1, b3) == doctest::Approx(2.)); // horizontally aligned
-    CHECK(distance(b1, b5) == (2.)*norm(b1.position())); // opposite vectors
+    CHECK(distance(b1, b5)
+          == (2.) * norm(b1.position())); // opposite vectors, 1 normal boid & 1
+                                          // predator
+  }
+  SUBCASE("testing angle")
+  {
+    // considering  other boids from b1 (regular boid) perspective
+    // coincident positions, 1 regular & 1 predator
+    CHECK(is_seen(b1, b1_p, 11.) == true);
+    // boids in field of view
+    CHECK(is_seen(b1, b2, 320.) == true);
+    CHECK(is_seen(b1, b3, 320.) == true);
+    CHECK(is_seen(b1, b6, 320.) == true);
+    // boids out of field of view
+    CHECK(is_seen(b1, b4, 320.) == false);
+    CHECK(is_seen(b1, b5, 320.) == false);
+
+    // considering  other boids from b7 (predator) perspective
+    // coincident positions, 1 regular & 1 predator
+    CHECK(is_seen(b7, b4, 1.) == true);
+    // boids close to the limit of the viewing angle, from opposite sides
+    CHECK(is_seen(b7, b2, 90.1) == true);
+    CHECK(is_seen(b7, b3, 90.1) == true);
+    // boids in field of view
+    CHECK(is_seen(b7, b1, 90.) == true);
+    CHECK(is_seen(b7, b1_p, 90.) == true);
+    // boids out of field of view
+    CHECK(is_seen(b7, b5, 90.) == false);
+    CHECK(is_seen(b7, b6, 90.) == false);
   }
 }

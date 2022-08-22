@@ -65,7 +65,6 @@ struct Velocity : public Vector2D
   using Vector2D::Vector2D;
 };
 
-// keeping speed in the allowed limits (speed modified, direction unaltered)
 Velocity& normalize(Velocity& v, double min_speed, double max_speed);
 
 class Boid
@@ -75,19 +74,19 @@ class Boid
   bool is_pred_ = false;
 
  public:
-  Boid(Position p, Velocity v, bool is_pred);
-  Boid(Position p, Velocity v);
+  explicit Boid(Position p, Velocity v, bool is_pred);
+  explicit Boid(Position p, Velocity v);
   // clang-format off
   Position position() const{return p_;}
   Position& position(){return p_;}
   Velocity velocity() const{return v_;}
   Velocity& velocity(){return v_;}
-  // only const method for is_pred_ since predatory nature of a boid
+  // only const method defined for is_pred_ since predatory nature of a boid
   // is not meant to be modified after its creation
   bool is_predator() const{return is_pred_;}
-  // clang-format on
 };
+// clang-format on
 
 double distance(Boid const& b1, Boid const& b2);
-
+bool is_seen(Boid const& b1, Boid const& b2, double angle);
 #endif

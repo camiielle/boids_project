@@ -1,3 +1,4 @@
+#include "boids.hpp"
 #include "parameters.hpp"
 #include "parser.hpp"
 
