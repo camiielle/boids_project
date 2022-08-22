@@ -23,8 +23,7 @@ struct Vector2D : public std::pair<double, double>
 // clang-format on
 inline double norm(Vector2D const& vector)
 {
-  return std::sqrt(vector.x() * vector.x()
-                   + vector.y() * vector.y());
+  return std::sqrt(vector.x() * vector.x() + vector.y() * vector.y());
 }
 
 template<class T>
@@ -88,5 +87,10 @@ class Boid
 // clang-format on
 
 double distance(Boid const& b1, Boid const& b2);
+
 bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view);
+
+Velocity bound_position(Boid& b, double x_min, double x_max, double y_min,
+                        double y_max);
+
 #endif
