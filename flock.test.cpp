@@ -42,8 +42,6 @@ TEST_CASE("testing flying rules")
     CHECK(nbrs[2].position() == b6.position());
     CHECK_FALSE((nbrs[0].is_pred()));
   }
-  SUBCASE("testing close_neighbors")
-  {}
   SUBCASE("testing competitors")
   {}
   SUBCASE("testing prey")

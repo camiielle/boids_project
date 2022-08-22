@@ -23,10 +23,8 @@ std::vector<Boid>& neighbours(Boid const& boid, Flock const& flock,
   return nbrs;
 }
 
-// fills vector with close neighbours of boid (i.e the ones feeling separation)
-// inserting also boid istself
-std::vector<Boid>& close_neighbours(Boid const& boid, Flock const& flock,
-                                    std::vector<Boid>& close_nbrs);
+//NB: function neighbour can be used to obtain close neighbours as well, simply by passing d_s instead of d as the last argument
+
 std::vector<Boid>& predators(Boid const& boid, Flock const& flock,
                              std::vector<Boid>& preds);
 std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
