@@ -38,7 +38,8 @@ std::vector<Boid>& predators(Boid const& boid, Flock const& flock,
                              std::vector<Boid>& preds, double angle,
                              double d_s_pred);
 std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
-                               std::vector<Boid>& competitors);
+                               std::vector<Boid>& competitors, double angle,
+                               double d_s);
 Boid const& prey(Boid const& boid, Flock const& flock);
 
 #endif
