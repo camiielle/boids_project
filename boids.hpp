@@ -15,16 +15,16 @@ struct Vector2D : public std::pair<double, double>
   Vector2D& operator-=(Vector2D const& other);
   Vector2D& operator/=(double scalar);
   Vector2D& operator*=(double scalar);
-  double get_x() const{return first;}
-  double get_y() const{return second;}
-  double& set_x() {return first;}
-  double& set_y() {return second;}
+  double x() const{return first;}
+  double y() const{return second;}
+  double& x() {return first;}
+  double& y() {return second;}
 };
 // clang-format on
 inline double norm(Vector2D const& vector)
 {
-  return std::sqrt(vector.get_x() * vector.get_x()
-                   + vector.get_y() * vector.get_y());
+  return std::sqrt(vector.x() * vector.x()
+                   + vector.y() * vector.y());
 }
 
 template<class T>
@@ -88,5 +88,5 @@ class Boid
 // clang-format on
 
 double distance(Boid const& b1, Boid const& b2);
-bool is_seen(Boid const& b1, Boid const& b2, double angle);
+bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view);
 #endif

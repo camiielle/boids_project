@@ -61,8 +61,8 @@ Boid::Boid(Position p, Velocity v)
 
 double distance(Boid const& b1, Boid const& b2)
 {
-  double xdiff{b1.position().get_x() - b2.position().get_x()};
-  double ydiff{b1.position().get_y() - b2.position().get_y()};
+  double xdiff{b1.position().x() - b2.position().x()};
+  double ydiff{b1.position().y() - b2.position().y()};
   return std::sqrt(xdiff * xdiff + ydiff * ydiff);
 }
 
@@ -78,8 +78,8 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
   // of positions between b2 and b1
   constexpr double pi = 3.14159265358979323846;
   auto pos_diff{b2.position() - b1.position()};
-  double scalar_prod{pos_diff.get_x() * b1.velocity().get_x()
-                     + pos_diff.get_y() * b1.velocity().get_y()};
+  double scalar_prod{pos_diff.x() * b1.velocity().x()
+                     + pos_diff.y() * b1.velocity().y()};
   double cos{(scalar_prod / (norm(b1.velocity()) * norm(pos_diff)))};
   if (cos
       >= std::cos(pi * angle_of_view

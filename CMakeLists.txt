@@ -40,9 +40,11 @@ if (BUILD_TESTING)
 # add executable parameters.t, to build from the given source files 
  add_executable(parameters.t parameters.test.cpp)
  add_executable(boids.t boids.test.cpp boids.cpp)
+ add_executable(flock.t flock.test.cpp flock.cpp boids.cpp)
 # add executable parameters.t to test list, with the name parameters.t
   add_test(NAME parameters.t COMMAND parameters.t)
   add_test(NAME boids.t COMMAND boids.t)
+  add_test(NAME flock.t COMMAND flock.t)
 
  
 
