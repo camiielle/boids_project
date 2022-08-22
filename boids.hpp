@@ -82,7 +82,7 @@ class Boid
   Velocity& velocity(){return v_;}
   // only const method defined for is_pred_ since predatory nature of a boid
   // is not meant to be modified after its creation
-  bool is_predator() const{return is_pred_;}
+  bool is_pred() const{return is_pred_;}
 };
 // clang-format on
 
