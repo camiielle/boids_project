@@ -34,6 +34,9 @@ class Flock
 
 std::vector<Boid>& neighbours(Boid const& boid, Flock const& flock,
                               std::vector<Boid>& nbrs, double angle, double d);
+std::vector<Boid>& predators(Boid const& boid, Flock const& flock,
+                             std::vector<Boid>& preds, double angle,
+                             double d_s_pred);
 std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
                                std::vector<Boid>& competitors);
 Boid const& prey(Boid const& boid, Flock const& flock);

@@ -34,13 +34,27 @@ TEST_CASE("testing flying rules")
     CHECK(nbrs[0].position() == b1.position());
     CHECK_FALSE(nbrs[0].is_pred());
     CHECK(nbrs[1].velocity()
-          == b2.velocity()); // regular got copied, predaotr didn't
+          == b2.velocity()); // regular got copied, predator didn't
     CHECK(nbrs[1].position() == b2.position());
     CHECK_FALSE(nbrs[0].is_pred());
     CHECK(nbrs[2].velocity()
-          == b6.velocity()); // regular got copied, predaotr didn't
+          == b6.velocity()); // regular got copied, predator didn't
     CHECK(nbrs[2].position() == b6.position());
     CHECK_FALSE((nbrs[0].is_pred()));
+  }
+  SUBCASE("testing predators")
+  {
+    std::vector<Boid> preds;
+    CHECK((predators(b1, flock, preds, 180., 2.)).size()
+          == 2);              // all predators copied
+    CHECK(preds[0].velocity() // predator got copied, regular didn't
+          == b2_p.velocity());
+    CHECK(preds[0].position() == b2.position());
+    CHECK(preds[0].is_pred());
+    CHECK(preds[1].velocity()
+          == b6_p.velocity()); // predator got copied, regular didn't
+    CHECK(preds[1].position() == b6_p.position());
+    CHECK((preds[1].is_pred()));
   }
   SUBCASE("testing competitors")
   {}
