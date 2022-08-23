@@ -42,4 +42,12 @@ std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
                                double d_s);
 Boid const& find_prey(Boid const& boid, Flock const& flock, double angle);
 
+Velocity separation(Boid const& boid, Flock const& flock,
+                    Parameters const& pars);
+Velocity alignment(Boid const& boid, Flock const& flock, double angle, double d,
+                   double a);
+Velocity cohesion(Boid const& boid, Flock const& flock, double angle, double d,
+                  double c);
+Velocity seek(Boid const& boid, Flock const& flock, double angle);
+
 #endif

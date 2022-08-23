@@ -1,8 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "flock.hpp"
 #include "doctest.h"
+#include "parameters.hpp"
 
-TEST_CASE("testing flying rules")
+TEST_CASE("testing rules' auxiliary functions")
 {
   Velocity v1{0., 1.};
   Velocity v2{-3., 6.};
@@ -115,5 +116,52 @@ TEST_CASE("testing flying rules")
     CHECK_FALSE(prey4.is_pred());
     CHECK(prey4.position() == b3.position());
     CHECK(prey4.velocity() == b3.velocity());
+  }
+}
+
+TEST_CASE("Testing flying rules")
+{
+  Parameters const pars{185., 10.,     2.,  1.,   1., 1.,
+                        500,  .000005, 30., 3000, 60, 120};
+  // d_s_pred is 2.5 times greater than d_s 
+  Boid b1_p{{10., 12.}, {2., 4.}, true};
+  Boid b2{{-8., -12.}, {-2., -4.}};
+  Boid b3_p{{8., 10.}, {2., 2.}, true};
+  Boid b4_p{{6., 8.}, {4., 2.}, true};
+  Boid b5{{8., 8.}, {0., 2.}};
+  Boid b6_p{{-4., -10.}, {-4., -2.}, true};
+  Boid b7{{8., 7.}, {0., 2.}};
+  Boid b8{{6.5, 7.}, {0., -6.}};
+  Boid b9_p{{10., 11.}, {1., 1.}, true};
+  Flock flock{std::vector<Boid>{b1_p, b2, b3_p, b4_p, b5, b6_p, b7, b8, b9_p}};
+  SUBCASE("testing separation")
+  {
+    CHECK(separation(b1_p, flock, pars)
+          == Velocity{0., 0.}); // pred with no competitors nor preys
+    CHECK(
+        separation(b2, flock, pars)
+        == Velocity{0., 0.}); // regular with no predators nor close neighbours
+    CHECK(separation(b3_p, flock, pars)
+          == Velocity{-4., -3.}
+                 * (pars.get_s())); // pred with no prey, 2 competitors
+    CHECK(separation(b4_p, flock, pars)
+          == Velocity{0., 0.}); // pred with prey, no competitor
+    CHECK(separation(b5, flock, pars)
+          == Velocity{-2., -9.}
+                 * (pars.get_s_pred())); // regular with 4 predators, no
+                                         // close neighbours
+    CHECK(separation(b6_p, flock, pars)
+          == Velocity{0., 0.}); // pred with prey, no competitor
+    CHECK(separation(b7, flock, pars)
+          == Velocity{-.5, -8.} * (pars.get_s_pred())
+                 + Velocity{1.5, -1.}
+                       * (pars.get_s())); // regular with 3 predators, 2 close
+                                          // neighbours
+    CHECK(separation(b8, flock, pars)
+          == Velocity{-1.5, 0.}
+                 * (pars.get_s())); // regular with no preds, 1 close neighbour
+    CHECK(separation(b9_p, flock, pars)
+          == Velocity{0., -1.}
+                 * (pars.get_s())); // pred with no prey, 1 competitor
   }
 }
