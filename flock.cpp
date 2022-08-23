@@ -133,7 +133,7 @@ Velocity alignment(Boid const& boid, Flock const& flock, Parameters const& pars)
   neighbours(boid, flock, nbrs, pars.get_angle(), pars.get_d());
   int vec_size{static_cast<int>(nbrs.size())}; // not risking narrowing since
   // N_nbrs < N_boids which is an int
-  if (vec_size==1) { // if nbrs has only 1 element, it's boid itself
+  if (vec_size == 1) { // if nbrs has only 1 element, it's boid itself
     return {0., 0.};
   } else {
     return {std::transform_reduce((nbrs.begin()), (nbrs.end()),
@@ -145,5 +145,28 @@ Velocity alignment(Boid const& boid, Flock const& flock, Parameters const& pars)
   }
   // NB the formula used here is equivalent to the one subtracting boid's
   // velocity to the mean of others' velocities, with the advantage of not
+  // requiring erasing boid from nbrs
+}
+
+Velocity cohesion(Boid const& boid, Flock const& flock, Parameters const& pars)
+{
+  std::vector<Boid> nbrs{};
+  // note that neighbours will assert internally that boid is not a pred
+  neighbours(boid, flock, nbrs, pars.get_angle(), pars.get_d());
+  int vec_size{static_cast<int>(nbrs.size())}; // not risking narrowing since
+  // N_nbrs < N_boids which is an int
+  if (vec_size == 1) { // if nbrs has only 1 element, it's boid itself
+    return {0., 0.};
+  } else {
+    auto sum{std::transform_reduce((nbrs.begin()), (nbrs.end()),
+                                   Position{0., 0.}, std::plus<>{},
+                                   [&](Boid const& other) {
+                                     return (other.position() - boid.position())
+                                          * (pars.get_c() / (vec_size - 1));
+                                   })};
+    return {sum.x(), sum.y()};
+  }
+  // NB the formula used here is equivalent to the one subtracting boid's
+  // position to the others' center of mass, with the advantage of not
   // requiring erasing boid from nbrs
 }

@@ -166,26 +166,25 @@ TEST_CASE("Testing flying rules")
           == Velocity{0., 1.}
                  * (-pars.get_s())); // pred with no prey, 1 competitor
   }
-  SUBCASE("testing alignment")
+  SUBCASE("testing cohesion")
   {
     Boid b10{{7.5, 6.5}, {-1., 1.}};
     Boid b11{{-7., -10.5}, {-3., 0.}};
     flock.push_back(b10);
     flock.push_back(b11);
-    CHECK((alignment(b2, flock, pars))
+    CHECK((cohesion(b2, flock, pars))
           == Velocity{0., 0.}); // regular, no neighbours
-    CHECK((alignment(b5, flock, pars))
+    CHECK((cohesion(b5, flock, pars))
           == Velocity{0., 0.}); // regular, no neighbours (the 4 predators are
-                                // not affecting alignment)
-    CHECK((alignment(b8, flock, pars))
-          == Velocity{-.5, 7.5}); // regular, 2 neighbours
-    CHECK((alignment(b7, flock, pars))
-          == Velocity{0., -4.}); // regular, 2 neighbours
-    CHECK((alignment(b10, flock, pars)).x()
-          == doctest::Approx(1.)); // regular, 3 neighbours
-    CHECK((alignment(b10, flock, pars)).y()
-          == doctest::Approx(-5. / 3.)); // regular, 3 neighbours
-    CHECK((alignment(b11, flock, pars))
-          == Velocity{1., -4.}); // regular, 1 neighbour
+                                // not affecting cohesion)
+    CHECK((cohesion(b8, flock, pars))
+          == Velocity{1.25, -.25}); // regular, 2 neighbours
+    CHECK((cohesion(b7, flock, pars))
+          == Velocity{-.75, .5});                  // regular, 2 neighbours
+    CHECK((cohesion(b10, flock, pars)).x() == 0.); // regular, 3 neighbours
+    CHECK((cohesion(b10, flock, pars)).y()
+          == doctest::Approx(5. / 6.)); // regular, 3 neighbours
+    CHECK((cohesion(b11, flock, pars))
+          == Velocity{-1., -1.5}); // regular, 1 neighbour
   }
 }
