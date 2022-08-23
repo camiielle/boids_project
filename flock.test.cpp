@@ -30,7 +30,7 @@ TEST_CASE("testing rules' auxiliary functions")
   {
     std::vector<Boid> nbrs;
     CHECK((neighbours(b1, flock, nbrs, 180., 2.)).size()
-          == 3);                                // all regular neighbours copied
+          == 3u);                               // all regular neighbours copied
     CHECK(nbrs[0].velocity() == b1.velocity()); // b1 itself was copied
     CHECK(nbrs[0].position() == b1.position());
     CHECK_FALSE(nbrs[0].is_pred());
@@ -44,13 +44,13 @@ TEST_CASE("testing rules' auxiliary functions")
     CHECK_FALSE((nbrs[0].is_pred()));
     nbrs.clear();
     CHECK((neighbours(b7, flock, nbrs, 180., 2.)).size()
-          == 1); // boid with no neighbours
+          == 1u); // regular with no neighbours
   }
   SUBCASE("testing predators")
   {
     std::vector<Boid> preds;
     CHECK((predators(b1, flock, preds, 180., 2.)).size()
-          == 2);              // all predators copied
+          == 2u);             // all predators copied
     CHECK(preds[0].velocity() // predator was copied, regular didn't
           == b2_p.velocity());
     CHECK(preds[0].position() == b2_p.position());
@@ -59,12 +59,15 @@ TEST_CASE("testing rules' auxiliary functions")
           == b6_p.velocity()); // predator was copied, regular didn't
     CHECK(preds[1].position() == b6_p.position());
     CHECK((preds[1].is_pred()));
+    preds.clear();
+    CHECK((predators(b7, flock, preds, 180., .5)).size()
+          == 0u); // regular with no predators
   }
   SUBCASE("testing competitors")
   {
     std::vector<Boid> comps;
     CHECK((competitors(b6_p, flock, comps, 240., 6.)).size()
-          == 3); // all competitors were copied
+          == 3u); // all competitors were copied
     CHECK(comps[0].velocity()
           == b2_p.velocity()); // predator got copied, regular didn't
     CHECK(comps[0].position() == b2_p.position());
@@ -76,6 +79,9 @@ TEST_CASE("testing rules' auxiliary functions")
     CHECK(comps[2].velocity() == b6_p.velocity()); // b6_p itself got copied
     CHECK(comps[2].position() == b6_p.position());
     CHECK(comps[2].is_pred());
+    comps.clear();
+    CHECK((competitors(b4_p, flock, comps, 240., .5)).size()
+          == 1u); // predator with no competitors
   }
   SUBCASE("testing find_prey")
   {
