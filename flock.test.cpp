@@ -8,7 +8,7 @@ TEST_CASE("testing flying rules")
   Velocity v2{-3., 6.};
   Position p1{};
   Position p2{1., 1.};
-  Position p3{.5, 0.};
+  Position p3{5., 0.};
 
   Boid b1{p1, v1};               //[from b1's perspective]:
   Boid b2{p2, v2};               // in distance and angle, regular
@@ -84,16 +84,36 @@ TEST_CASE("testing flying rules")
     CHECK(prey.position() == b1.position());
     CHECK(prey.velocity() == b1.velocity());
 
-    Boid prey1{find_prey(b5_p, flock1, 180.)}; // no boids in sight
+    Boid prey1{find_prey(b5_p, flock1, 180.)}; // no boids at all in sight
     CHECK(prey1.is_pred());
     CHECK(prey1.position() == b5_p.position());
     CHECK(prey1.velocity() == b5_p.velocity());
 
-    Boid b8_p{p2*2., Velocity{1.,1.}, true};
+    Boid b8_p{p2 * 2., Velocity{1., 1.}, true};
     flock1.push_back(b8_p);
     Boid prey2{find_prey(b8_p, flock1, 90.)}; // only predators in sight
     CHECK(prey2.is_pred());
     CHECK(prey2.position() == b8_p.position());
     CHECK(prey2.velocity() == b8_p.velocity());
+
+    Boid b1_p{p1, v1, true};
+    boids[0] = b1_p; // replaced b1 with b1_p
+    Flock flock2{boids};
+    Boid prey3{find_prey(
+        b1_p, flock2,
+        185.)}; // predators and regular in sight, one pred and reg coincide
+    CHECK_FALSE(prey3.is_pred()); // between coinciding regular and pred,
+                                  // regular was picked
+    CHECK(prey3.position() == b2.position());
+    CHECK(prey3.velocity() == b2.velocity());
+
+    Boid b9_p{Position{.5, -.5}, v1 * (-1.), true};
+    flock2.push_back(b9_p);
+    Boid prey4{find_prey(b9_p, flock2,
+                         220.)}; // predators and regulars in sight, closer
+                                 // regular NOT coinciding with any pred
+    CHECK_FALSE(prey4.is_pred());
+    CHECK(prey4.position() == b3.position());
+    CHECK(prey4.velocity() == b3.velocity());
   }
 }

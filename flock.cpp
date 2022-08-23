@@ -72,11 +72,14 @@ Boid const& find_prey(Boid const& boid, Flock const& flock, double angle)
   if (it == (flock.state().end())) {
     return boid;
   } else {
+    //an element is the smallest if no other element compares less than it.
     auto prey{std::min_element(
         (flock.state().begin()), (flock.state().end()),
         [=, &boid](Boid const& b1, Boid const& b2) {
-          return (!(b1.is_pred()) && (is_seen(boid, b1, angle))
-                  && (distance(boid, b1) < distance(boid, b2)));
+          return (b2.is_pred())
+                   ? (!(b1.is_pred()) && (is_seen(boid, b1, angle)))
+                   : (!(b1.is_pred()) && (is_seen(boid, b1, angle))
+                      && (distance(boid, b1) < distance(boid, b2)));
         })};
     assert(!(prey->is_pred()));
     return *prey;
