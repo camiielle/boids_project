@@ -21,7 +21,8 @@ class Flock
 
   // clang-format off
   bool empty() const{ return flock_.empty(); }
-  std::size_t size() const { return flock_.size(); }
+  //NB not risking narrowing with int as return type since parameter N_boids is an int
+  int size() const { return flock_.size(); }
   std::vector<Boid> const& state() const { return flock_; }
   void push_back(Boid const& boid) 
   {
@@ -44,10 +45,9 @@ Boid const& find_prey(Boid const& boid, Flock const& flock, double angle);
 
 Velocity separation(Boid const& boid, Flock const& flock,
                     Parameters const& pars);
-Velocity alignment(Boid const& boid, Flock const& flock, double angle, double d,
-                   double a);
-Velocity cohesion(Boid const& boid, Flock const& flock, double angle, double d,
-                  double c);
+Velocity alignment(Boid const& boid, Flock const& flock,
+                   Parameters const& pars);
+Velocity cohesion(Boid const& boid, Flock const& flock, Parameters const& pars);
 Velocity seek(Boid const& boid, Flock const& flock, double angle);
 
 #endif

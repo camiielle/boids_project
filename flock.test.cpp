@@ -42,6 +42,9 @@ TEST_CASE("testing rules' auxiliary functions")
           == b6.velocity()); // regular got copied, predator didn't
     CHECK(nbrs[2].position() == b6.position());
     CHECK_FALSE((nbrs[0].is_pred()));
+    nbrs.clear();
+    CHECK((neighbours(b7, flock, nbrs, 180., 2.)).size()
+          == 1); // boid with no neighbours
   }
   SUBCASE("testing predators")
   {
@@ -121,7 +124,7 @@ TEST_CASE("testing rules' auxiliary functions")
 
 TEST_CASE("Testing flying rules")
 {
-  Parameters const pars{190., 10.,     2.,  1.,   1., 1.,
+  Parameters const pars{190., 5.,      2.,  1.,   1., 1.,
                         500,  .000005, 30., 3000, 60, 120};
   // d_s_pred is 2.5 times greater than d_s
   Boid b1_p{{10., 12.}, {2., 4.}, true};
@@ -162,5 +165,27 @@ TEST_CASE("Testing flying rules")
     CHECK(separation(b9_p, flock, pars)
           == Velocity{0., 1.}
                  * (-pars.get_s())); // pred with no prey, 1 competitor
+  }
+  SUBCASE("testing alignment")
+  {
+    Boid b10{{7.5, 6.5}, {-1., 1.}};
+    Boid b11{{-7., -10.5}, {-3., 0.}};
+    flock.push_back(b10);
+    flock.push_back(b11);
+    CHECK((alignment(b2, flock, pars))
+          == Velocity{0., 0.}); // regular, no neighbours
+    CHECK((alignment(b5, flock, pars))
+          == Velocity{0., 0.}); // regular, no neighbours (the 4 predators are
+                                // not affecting alignment)
+    CHECK((alignment(b8, flock, pars))
+          == Velocity{-.5, 7.5}); // regular, 2 neighbours
+    CHECK((alignment(b7, flock, pars))
+          == Velocity{0., -4.}); // regular, 2 neighbours
+    CHECK((alignment(b10, flock, pars)).x()
+          == doctest::Approx(1.)); // regular, 3 neighbours
+    CHECK((alignment(b10, flock, pars)).y()
+          == doctest::Approx(-5. / 3.)); // regular, 3 neighbours
+    CHECK((alignment(b11, flock, pars))
+          == Velocity{1., -4.}); // regular, 1 neighbour
   }
 }

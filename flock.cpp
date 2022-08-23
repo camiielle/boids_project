@@ -125,3 +125,25 @@ Velocity separation(Boid const& boid, Flock const& flock,
     return {sum1.x() + sum2.x(), sum1.y() + sum2.y()};
   }
 }
+
+Velocity alignment(Boid const& boid, Flock const& flock, Parameters const& pars)
+{
+  std::vector<Boid> nbrs{};
+  // note that neighbours will assert internally that boid is not a pred
+  neighbours(boid, flock, nbrs, pars.get_angle(), pars.get_d());
+  int vec_size{static_cast<int>(nbrs.size())}; // not risking narrowing since
+  // N_nbrs < N_boids which is an int
+  if (vec_size==1) { // if nbrs has only 1 element, it's boid itself
+    return {0., 0.};
+  } else {
+    return {std::transform_reduce((nbrs.begin()), (nbrs.end()),
+                                  Velocity{0., 0.}, std::plus<>{},
+                                  [&](Boid const& other) {
+                                    return (other.velocity() - boid.velocity())
+                                         * (pars.get_a() / (vec_size - 1));
+                                  })};
+  }
+  // NB the formula used here is equivalent to the one subtracting boid's
+  // velocity to the mean of others' velocities, with the advantage of not
+  // requiring erasing boid from nbrs
+}
