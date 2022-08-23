@@ -73,6 +73,27 @@ TEST_CASE("testing flying rules")
     CHECK(comps[2].position() == b6_p.position());
     CHECK(comps[2].is_pred());
   }
-  SUBCASE("testing prey")
-  {}
+  SUBCASE("testing find_prey")
+  {
+    boids.erase((boids.end()) - 3);   // erasing b6
+    boids.erase((boids.begin()) + 6); // erasing b5
+    Flock flock1{boids};
+    Boid prey{
+        find_prey(b6_p, flock1, 270.)}; // predator with coincident regular boid
+    CHECK_FALSE(prey.is_pred());
+    CHECK(prey.position() == b1.position());
+    CHECK(prey.velocity() == b1.velocity());
+
+    Boid prey1{find_prey(b5_p, flock1, 180.)}; // no boids in sight
+    CHECK(prey1.is_pred());
+    CHECK(prey1.position() == b5_p.position());
+    CHECK(prey1.velocity() == b5_p.velocity());
+
+    Boid b8_p{p2*2., Velocity{1.,1.}, true};
+    flock1.push_back(b8_p);
+    Boid prey2{find_prey(b8_p, flock1, 90.)}; // only predators in sight
+    CHECK(prey2.is_pred());
+    CHECK(prey2.position() == b8_p.position());
+    CHECK(prey2.velocity() == b8_p.velocity());
+  }
 }

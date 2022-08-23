@@ -44,7 +44,7 @@ Velocity& normalize(Velocity& v, double min_speed, double max_speed)
 }
 
 // Boid ctor overloading: 1st one will be used to construct predators, 2nd
-// for regualr boids
+// for regular boids
 Boid::Boid(Position p, Velocity v, bool is_pred)
     : p_{p}
     , v_{v}

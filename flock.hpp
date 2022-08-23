@@ -40,6 +40,6 @@ std::vector<Boid>& predators(Boid const& boid, Flock const& flock,
 std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
                                std::vector<Boid>& competitors, double angle,
                                double d_s);
-Boid const& prey(Boid const& boid, Flock const& flock);
+Boid const& find_prey(Boid const& boid, Flock const& flock, double angle);
 
 #endif

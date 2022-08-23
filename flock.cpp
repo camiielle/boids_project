@@ -57,4 +57,28 @@ std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
   return competitors;
 }
 
-Boid const& prey(Boid const& boid, Flock const& flock);
+// returns predator boid's prey, i.e the nearest regular boid in sight
+Boid const& find_prey(Boid const& boid, Flock const& flock, double angle)
+{
+  assert(boid.is_pred());   // only predators feel the seek drive towards preys
+  assert(flock.size() > 1); // expects a flock with more than one boid
+
+  // checking if at least one regular boid is in sight
+  auto it{std::find_if((flock.state().begin()), (flock.state().end()),
+                       [=, &boid](Boid const& b) {
+                         return ((!(b.is_pred())) && (is_seen(boid, b, angle)));
+                       })};
+  // If none is, boid itself is returned
+  if (it == (flock.state().end())) {
+    return boid;
+  } else {
+    auto prey{std::min_element(
+        (flock.state().begin()), (flock.state().end()),
+        [=, &boid](Boid const& b1, Boid const& b2) {
+          return (!(b1.is_pred()) && (is_seen(boid, b1, angle))
+                  && (distance(boid, b1) < distance(boid, b2)));
+        })};
+    assert(!(prey->is_pred()));
+    return *prey;
+  }
+}
