@@ -9,7 +9,7 @@
 class Flock
 {
   std::vector<Boid> flock_;
-  Boid solve(Boid const& boid, Parameters const& pars);
+  Boid solve(Boid const& boid, Parameters const& pars) const;
 
  public:
   explicit Flock(std::vector<Boid> const& flock)

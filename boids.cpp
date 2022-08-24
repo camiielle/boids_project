@@ -92,7 +92,7 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
 
 // encourages the boid to stay within rough boundaries in order to keep the
 // flock on screen
-Velocity bound_position(Boid& b, double x_min, double x_max, double y_min,
+Velocity& bound_position(Boid& b, double x_min, double x_max, double y_min,
                         double y_max)
 {
   double norm_v{norm(b.velocity())};

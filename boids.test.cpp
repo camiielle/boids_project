@@ -65,7 +65,7 @@ TEST_CASE("testing Vector2D")
 }
 
 // functions defined here and not exported anywhere, only to test
-// that overlaoding is performed correctly
+// that overloading is performed correctly
 
 // clang-format off
 int test_overload(Vector2D) {return 0;}

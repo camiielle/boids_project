@@ -215,3 +215,136 @@ TEST_CASE("Testing flying rules")
     CHECK(seek(b9_p, flock, pars) == Velocity{0., 0.});
   }
 }
+
+TEST_CASE("Testing evolve")
+{
+  Parameters const pars{300., 3.,      1.,  2.,   .5, 1.,
+                        100., .000005, 30., 3000, 60, 100};
+  Boid b1{{}, {1., 1.}};
+  Boid b2{{8., 10.}, {1., 2.}};
+  Boid b3{{13., 3.}, {-1., 3.}};
+  Boid b4{{2., 5.}, {0., 3.}};
+  double d_t{pars.get_duration() / pars.get_steps()};
+
+  SUBCASE("4 regulars (no neighbours), all valid")
+  {
+    std::vector<Boid> boids{b1, b2, b3, b4};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 4); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK_FALSE(flock.state()[1].is_pred());
+    CHECK_FALSE(flock.state()[2].is_pred());
+    CHECK_FALSE(flock.state()[3].is_pred());
+    // order and velocity unchanged, positions modified only by the motion of
+    // boid itself
+    CHECK(flock.state()[0].position().x()
+          == b1.position().x() + b1.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b1.position().y() + b1.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity() == b1.velocity());
+    CHECK(flock.state()[1].position().x()
+          == b2.position().x() + b2.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b2.position().y() + b2.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity() == b2.velocity());
+    CHECK(flock.state()[2].position().x()
+          == b3.position().x() + b3.velocity().x() * d_t);
+    CHECK(flock.state()[2].position().y()
+          == b3.position().y() + b3.velocity().y() * d_t);
+    CHECK(flock.state()[2].velocity() == b3.velocity());
+    CHECK(flock.state()[3].position().x()
+          == b4.position().x() + b4.velocity().x() * d_t);
+    CHECK(flock.state()[3].position().y()
+          == b4.position().y() + b4.velocity().y() * d_t);
+    CHECK(flock.state()[3].velocity() == b4.velocity());
+  }
+  SUBCASE("5 regulars (no neighbours), 2 go out of grid after evolution")
+  { // testing that bound_position is applied within solve when evolve is called
+    b1.velocity() = {-1., 1.};     // b1 will cross x_min
+    Boid b5{{4., .1}, {0., -15.}}; // b5 will cross y_min
+    std::vector<Boid> boids{b1, b2, b3, b4, b5};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state()[0].velocity().x() == b1.velocity().x() + 2. * sqrt(2.));
+    CHECK(flock.state()[0].velocity().y()
+          == b1.velocity().y()); // v_y unaltered
+    CHECK(flock.state()[4].velocity().y() == b5.velocity().y() + 30.);
+    CHECK(flock.state()[4].velocity().x()
+          == b5.velocity().x()); // v_x unaltered
+    // velocities were modified in accordance to bound_position's formula
+  }
+  SUBCASE("4 regulars (no neighbours), one crosses x_min and its speed breaks "
+          "limits")
+  { // testing that normalize is applied, after bound_position, within solve
+    // when evolve is called
+    b4.position() = {.001, 5.};
+    b4.velocity() = {-3., 4.};
+    Parameters const pars1{270., 3.,      1.,  2.,   .5, 1.,
+                           7.,   .000005, 30., 3000, 60, 100};
+    std::vector<Boid> boids{b1, b2, b3, b4};
+    Flock flock{boids};
+    flock.evolve(pars1);
+    CHECK(flock.state()[3].velocity().x()
+          == doctest::Approx(49. * .95 / sqrt(65.)));
+    CHECK(flock.state()[3].velocity().y()
+          == doctest::Approx(28. * .95 / sqrt(65.)));
+  }
+  SUBCASE("6 regulars (no close neighbours), some have neighbours")
+  {
+    Boid b5{{2., 3.}, {1., 2.}};
+    Boid b6{{1., 1.}, {0., 3.}};
+    Boid b7{{2.5, 4.}, {-1., 1.}};
+    std::vector<Boid> boids{b1, b2, b3, b4, b5, b6, b7};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 7); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK_FALSE(flock.state()[1].is_pred());
+    CHECK_FALSE(flock.state()[2].is_pred());
+    CHECK_FALSE(flock.state()[3].is_pred());
+    CHECK_FALSE(flock.state()[4].is_pred());
+    CHECK_FALSE(flock.state()[5].is_pred());
+    CHECK_FALSE(flock.state()[6].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    CHECK(flock.state()[0].position().x() // b1 has 1 neighbour
+          == b1.position().x() + b1.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b1.position().y() + b1.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity() == b1.velocity() + Velocity{-.5, 2.5});
+    CHECK(flock.state()[1].position().x() // b2 has no neighbours
+          == b2.position().x() + b2.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b2.position().y() + b2.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity() == b2.velocity());
+    CHECK(flock.state()[2].position().x() // b3 has no neighbours
+          == b3.position().x() + b3.velocity().x() * d_t);
+    CHECK(flock.state()[2].position().y()
+          == b3.position().y() + b3.velocity().y() * d_t);
+    CHECK(flock.state()[2].velocity() == b3.velocity());
+    CHECK(flock.state()[3].position().x() // b4 has no neighbours
+          == b4.position().x() + b4.velocity().x() * d_t);
+    CHECK(flock.state()[3].position().y()
+          == b4.position().y() + b4.velocity().y() * d_t);
+    CHECK(flock.state()[3].velocity() == b4.velocity());
+    CHECK(flock.state()[4].position().x() // b5 has 2 neighbours
+          == b5.position().x() + b5.velocity().x() * d_t);
+    CHECK(flock.state()[4].position().y()
+          == b5.position().y() + b5.velocity().y() * d_t);
+    CHECK(flock.state()[4].velocity()
+          == (b5.velocity() + Velocity{-1.375, .75}));
+    CHECK(flock.state()[5].position().x() // b6 has 2 neighbours
+          == b6.position().x() + b6.velocity().x() * d_t);
+    CHECK(flock.state()[5].position().y()
+          == b6.position().y() + b6.velocity().y() * d_t);
+    CHECK(flock.state()[5].velocity() == (b6.velocity() + Velocity{1., -1.25}));
+    CHECK(flock.state()[6].position().x() // b7 has 2 neighbours
+          == b7.position().x() + b7.velocity().x() * d_t);
+    CHECK(flock.state()[6].position().y()
+          == b7.position().y() + b7.velocity().y() * d_t);
+    CHECK(flock.state()[6].velocity() == (b7.velocity() + Velocity{1.25, 1.5}));
+  }
+}

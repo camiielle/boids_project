@@ -191,3 +191,42 @@ Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
     return vel;
   }
 }
+Boid Flock::solve(Boid const& boid, Parameters const& pars) const
+{
+  Velocity d_v{(boid.is_pred())
+                   ? (separation(boid, *this, pars) + seek(boid, *this, pars))
+                   : (separation(boid, *this, pars)
+                      + alignment(boid, *this, pars)
+                      + cohesion(boid, *this, pars))};
+  Velocity v_f{boid.velocity() + d_v};
+  double const d_t{pars.get_duration() / pars.get_steps()};
+  assert(d_t > 0.);
+  Position x_f{boid.position().x() + (boid.velocity().x() * d_t),
+               boid.position().y() + (boid.velocity().y() * d_t)};
+  Boid b_f{(boid.is_pred()) ? Boid{x_f, v_f, true} : Boid{x_f, v_f}};
+  // Boid returned from solve is always "valid", i.e bound_position has been
+  // applied and speed is within limits:
+  normalize(bound_position(b_f, pars.get_x_min(), pars.get_x_max(),
+                           pars.get_y_min(), pars.get_y_max()),
+            pars.get_min_speed(), pars.get_max_speed());
+  return b_f;
+}
+
+void Flock::evolve(Parameters const& pars)
+{
+  assert(this->size() > 1);
+  std::vector<Boid> state_f{};
+  std::transform(flock_.begin(), flock_.end(), std::back_inserter(state_f),
+                 [&](Boid const& boid) { return solve(boid, pars); });
+  // asserting that vectors have same size, that boids' is_pred attribute is
+  // unchanged for all and that order was left unaltered
+  assert(flock_.size() == state_f.size());
+  assert(std::equal(flock_.begin(), flock_.end(), state_f.begin(),
+                    [](Boid const& b1, Boid const& b2) {
+                      return (b1.is_pred() == b2.is_pred());
+                    }));
+  // overwriting only when all new states have been calculated (instead of using
+  // flock_ as the output range in std::transform) to prevent an old boid's
+  // state from being calculated with an already updated boid
+  flock_ = state_f;
+}
