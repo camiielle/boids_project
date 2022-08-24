@@ -74,8 +74,8 @@ Boid const& find_prey(Boid const& boid, Flock const& flock, double angle)
   if (it == (flock.state().end())) {
     return boid;
   } else {
-    // with std::min an element is the smallest if no other element compares
-    // less than it
+    // with std::min_element an element is the smallest if no other element
+    // compares less than it
     auto prey{std::min_element(
         (flock.state().begin()), (flock.state().end()),
         [=, &boid](Boid const& b1, Boid const& b2) {
@@ -169,4 +169,25 @@ Velocity cohesion(Boid const& boid, Flock const& flock, Parameters const& pars)
   // NB the formula used here is equivalent to the one subtracting boid's
   // position to the others' center of mass, with the advantage of not
   // requiring erasing boid from nbrs
+}
+
+Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
+{
+  // note that find_prey will assert internally that boid is a pred
+  auto prey{find_prey(boid, flock, pars.get_angle())};
+  if (prey.is_pred()) { // this means find_prey returned boid itself (i.e. no
+                        // preys in sight)
+    return {0., 0.};
+  } else {
+    auto pos_diff{prey.position() - boid.position()};
+    // Predators' look-ahead feature allows them to take into
+    // account the current velocity of prey in addition to its position.
+    Velocity vel{pos_diff.x() + prey.velocity().x(),
+                 pos_diff.y() + prey.velocity().y()};
+    if (norm(vel)) {
+      vel = (vel / norm(vel))
+          * (norm(pos_diff) * (norm(boid.velocity()) / pars.get_max_speed()));
+    }
+    return vel;
+  }
 }

@@ -62,9 +62,9 @@ class Parameters
   }
 
  public:
- explicit Parameters(double angle, double d, double d_s, double s, double c, double a,
-             double max_speed, double min_speed_fraction, double duration,
-             int steps, int prescale, int N_boids)
+  explicit Parameters(double angle, double d, double d_s, double s, double c,
+                      double a, double max_speed, double min_speed_fraction,
+                      double duration, int steps, int prescale, int N_boids)
       : angle{angle}
       , d{d}
       , d_s{d_s}
@@ -106,6 +106,8 @@ class Parameters
   double get_s() const{return s;}
   double get_c() const{return c;}
   double get_a() const{return a;}
+  double get_max_speed() const{return max_speed;}
+  double get_min_speed() const{return min_speed;}
   double get_duration() const{return duration;}
   int get_steps() const{return steps;}
   int get_prescale() const{return prescale;}

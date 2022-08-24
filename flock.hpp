@@ -48,6 +48,6 @@ Velocity separation(Boid const& boid, Flock const& flock,
 Velocity alignment(Boid const& boid, Flock const& flock,
                    Parameters const& pars);
 Velocity cohesion(Boid const& boid, Flock const& flock, Parameters const& pars);
-Velocity seek(Boid const& boid, Flock const& flock, double angle);
+Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars);
 
 #endif

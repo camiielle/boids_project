@@ -131,7 +131,7 @@ TEST_CASE("testing rules' auxiliary functions")
 TEST_CASE("Testing flying rules")
 {
   Parameters const pars{190., 5.,      2.,  1.,   1., 1.,
-                        500,  .000005, 30., 3000, 60, 120};
+                        100,  .000005, 30., 3000, 60, 120};
   // d_s_pred is 2.5 times greater than d_s
   Boid b1_p{{10., 12.}, {2., 4.}, true};
   Boid b2{{-8., -12.}, {-2., -4.}};
@@ -192,5 +192,26 @@ TEST_CASE("Testing flying rules")
           == doctest::Approx(5. / 6.)); // regular, 3 neighbours
     CHECK((cohesion(b11, flock, pars))
           == Velocity{-1., -1.5}); // regular, 1 neighbour
+  }
+  SUBCASE("testing seek")
+  {
+    CHECK(seek(b1_p, flock, pars) == Velocity{0., 0.}); // predator with no prey
+    CHECK(seek(b3_p, flock, pars) == Velocity{0., 0.}); // predator with no prey
+    CHECK(
+        seek(b4_p, flock, pars).x()
+        == doctest::Approx((Velocity{1. / sqrt(197.), -14. / sqrt(197.)} / 20.)
+                               .x())); // pred with prey (3 regulars in sight)
+    CHECK(seek(b4_p, flock, pars).y()
+          == (Velocity{1. / sqrt(197.), -14. / sqrt(197.)} / 20.).y());
+    CHECK(seek(b6_p, flock, pars).x()
+          == doctest::Approx(
+              (Velocity{-1., -1.} / sqrt(50.))
+                  .x())); // pred with prey (only 1 regular in sight)
+    CHECK(seek(b6_p, flock, pars).y()
+          == doctest::Approx((Velocity{-1., -1.} / sqrt(50.)).y()));
+    Boid b10{{12., 13.}, {-2., -2}};
+    flock.push_back(b10);
+    // predator with prey (1 reg in sight), case of norm(vel)==0.
+    CHECK(seek(b9_p, flock, pars) == Velocity{0., 0.});
   }
 }
