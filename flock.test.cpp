@@ -224,6 +224,9 @@ TEST_CASE("Testing evolve")
   Boid b2{{8., 10.}, {1., 2.}};
   Boid b3{{13., 3.}, {-1., 3.}};
   Boid b4{{2., 5.}, {0., 3.}};
+  Boid b5_p{{5., 2.}, {.5, 1.}, true};
+  Boid b6_p{{6., 8.}, {2., -1.}, true};
+  Boid b7_p{{4., 16.}, {1.5, 1.5}, true};
   double d_t{pars.get_duration() / pars.get_steps()};
 
   SUBCASE("4 regulars (no neighbours), all valid")
@@ -346,5 +349,75 @@ TEST_CASE("Testing evolve")
     CHECK(flock.state()[6].position().y()
           == b7.position().y() + b7.velocity().y() * d_t);
     CHECK(flock.state()[6].velocity() == (b7.velocity() + Velocity{1.25, 1.5}));
+  }
+  SUBCASE("3 predators, no competitors")
+  {
+    std::vector<Boid> boids{b5_p, b6_p, b7_p};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 3); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK(flock.state()[0].is_pred());
+    CHECK(flock.state()[1].is_pred());
+    CHECK(flock.state()[2].is_pred());
+    // order and velocity unchanged, positions modified only by the motion of
+    // boid itself
+    CHECK(flock.state()[0].position().x()
+          == b5_p.position().x() + b5_p.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b5_p.position().y() + b5_p.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity() == b5_p.velocity());
+    CHECK(flock.state()[1].position().x()
+          == b6_p.position().x() + b6_p.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b6_p.position().y() + b6_p.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity() == b6_p.velocity());
+    CHECK(flock.state()[2].position().x()
+          == b7_p.position().x() + b7_p.velocity().x() * d_t);
+    CHECK(flock.state()[2].position().y()
+          == b7_p.position().y() + b7_p.velocity().y() * d_t);
+    CHECK(flock.state()[2].velocity() == b7_p.velocity());
+  }
+  SUBCASE("5 predators, some with competitors")
+  {
+    Boid b8_p{{4., 15.5}, {0., 2.}, true};
+    Boid b9_p{{3.5, 16.}, {1., 0.}, true};
+    std::vector<Boid> boids{b5_p, b6_p, b7_p, b8_p, b9_p};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 5); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK(flock.state()[0].is_pred());
+    CHECK(flock.state()[1].is_pred());
+    CHECK(flock.state()[2].is_pred());
+    CHECK(flock.state()[3].is_pred());
+    CHECK(flock.state()[4].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    CHECK(flock.state()[0].position().x() // b5_p has no competitors
+          == b5_p.position().x() + b5_p.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b5_p.position().y() + b5_p.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity() == b5_p.velocity());
+    CHECK(flock.state()[1].position().x()
+          == b6_p.position().x() + b6_p.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y() // b6_p has no competitors
+          == b6_p.position().y() + b6_p.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity() == b6_p.velocity());
+    CHECK(flock.state()[2].position().x()// b7_p has 2 competitors
+          == b7_p.position().x() + b7_p.velocity().x() * d_t);
+    CHECK(flock.state()[2].position().y()
+          == b7_p.position().y() + b7_p.velocity().y() * d_t);
+    CHECK(flock.state()[2].velocity() == b7_p.velocity()+ Velocity{1., 1.});
+    CHECK(flock.state()[3].position().x()// b8_p has 2 competitors
+          == b8_p.position().x() + b8_p.velocity().x() * d_t);
+    CHECK(flock.state()[3].position().y()
+          == b8_p.position().y() + b8_p.velocity().y() * d_t);
+    CHECK(flock.state()[3].velocity() == b8_p.velocity()+ Velocity{1., -2.});
+    CHECK(flock.state()[4].position().x()// b9_p has 2 competitors
+          == b9_p.position().x() + b9_p.velocity().x() * d_t);
+    CHECK(flock.state()[4].position().y()
+          == b9_p.position().y() + b9_p.velocity().y() * d_t);
+    CHECK(flock.state()[4].velocity() == b9_p.velocity()+ Velocity{-2., 1.});
   }
 }
