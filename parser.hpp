@@ -14,7 +14,7 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "Set angle of view - must be in range (0.,360.)  [Default value is "
           "300.]")
       | lyra::opt(d, "neighbour-distance")["-D"]["--neighbour_distance"](
-          "Set neighbour distance - must be in range (0.,100.)  [Default value "
+          "Set neighbour distance - must be in range + (0.,100.) [Default value "
           "is 35.]")
       | lyra::opt(d_s, "separation-distance")["-d"]["--separation_distance"](
           "Set separation distance - must be in range "

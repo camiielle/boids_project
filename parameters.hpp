@@ -2,6 +2,7 @@
 #ifndef PARAMETERS_HPP
 #define PARAMETERS_HPP
 
+#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 #include <string>
@@ -48,17 +49,22 @@ class Parameters
 
   // values set by developer
 
-  double grid_side{100.}; // grid is a square
-  double d_s_pred;        // separation distance for predators
-  double s_pred;          // separation factor for predators
+  double x_min{0.};
+  double y_min{0.};
+  double x_max{100.};
+  double y_max{100.};
+
+  double d_s_pred; // separation distance for predators
+  double s_pred;   // separation factor for predators
 
   bool invariant()
   {
-    return (angle > 0. && angle < 360.) && (d > 0. && d < grid_side)
-        && (d_s > 0. && d_s < .5 * d) && (s > 0. && s < 5.)
-        && (c > 0. && c < 5.) && (a > 0. && a < 5.) && (max_speed > 0.)
-        && (min_speed > 0. && min_speed < max_speed) && (duration > 0.)
-        && (steps > 1) && (prescale > 0 && prescale < steps) && (N_boids > 1);
+    return (angle > 0. && angle < 360.)
+        && (d > 0. && d < std::min(x_max, y_max)) && (d_s > 0. && d_s < .5 * d)
+        && (s > 0. && s < 5.) && (c > 0. && c < 5.) && (a > 0. && a < 5.)
+        && (max_speed > 0.) && (min_speed > 0. && min_speed < max_speed)
+        && (duration > 0.) && (steps > 1) && (prescale > 0 && prescale < steps)
+        && (N_boids > 1);
   }
 
  public:
@@ -82,7 +88,7 @@ class Parameters
 
   {
     is_in_range(angle, 0., 360., "angle-of-view");
-    is_in_range(d, 0., grid_side, "neighbour-distance");
+    is_in_range(d, 0., std::min(x_max, y_max), "neighbour-distance");
     // d_s has to be significantly less than d for the flock to form
     is_in_range(d_s, 0., 0.5 * d, "separation-distance");
     is_in_range(s, 0., 5., "separation-factor");
@@ -112,6 +118,10 @@ class Parameters
   int get_steps() const{return steps;}
   int get_prescale() const{return prescale;}
   int get_N_boids() const{return N_boids;}
+  double get_x_min() const{return x_min;}
+  double get_x_max() const{return x_max;}
+  double get_y_min() const{return y_min;}
+  double get_y_max() const{return y_max;}
   double get_d_s_pred() const{return d_s_pred;}
   double get_s_pred() const{return s_pred;}
   // clang-format on
