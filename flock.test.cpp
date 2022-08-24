@@ -490,8 +490,79 @@ TEST_CASE("Testing evolve")
           "close neighbours, two consecutive evolutions: one regular going out "
           "of grid after first evolution,")
   {
-    b6_p.position() = {9., 9.};
+    b6_p.position() = {9.5, 9.5};
+    b4.velocity()   = {0., -1.};
+    Boid b5{{2., 2.1}, {.5, 1.}};
     Boid b8{{.5, 0.}, {1., -1.}}; // will cross y_min
-    Boid b9_p{{10., 10.}, {1., 3.}};
+    Boid b9_p{{10., 10.}, {1., 3.}, true};
+    std::vector<Boid> boids{b1, b2, b3, b4, b5, b6_p, b7_p, b8, b9_p};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 9); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK_FALSE(flock.state()[1].is_pred());
+    CHECK_FALSE(flock.state()[2].is_pred());
+    CHECK_FALSE(flock.state()[3].is_pred());
+    CHECK_FALSE(flock.state()[4].is_pred());
+    CHECK(flock.state()[5].is_pred());
+    CHECK(flock.state()[6].is_pred());
+    CHECK_FALSE(flock.state()[7].is_pred());
+    CHECK(flock.state()[8].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    CHECK(flock.state()[0]
+              .position()
+              .x() // b1 has 1 close neighbour, 1 neighbour, no predators
+          == b1.position().x() + b1.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b1.position().y() + b1.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity()
+          == b1.velocity() + Velocity{-.625, -.475});
+    CHECK(flock.state()[1].position().x() // b2 has 2 predators, no neighbours
+          == b2.position().x() + b2.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b2.position().y() + b2.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity()
+          == b2.velocity() + (Velocity{-3.5, .5} * pars.get_s_pred()));
+    CHECK(flock.state()[2].position().x() // b3 has no predators nor neighbours
+          == b3.position().x() + b3.velocity().x() * d_t);
+    CHECK(flock.state()[2].position().y()
+          == b3.position().y() + b3.velocity().y() * d_t);
+    CHECK(flock.state()[2].velocity() == b3.velocity());
+    CHECK(flock.state()[3].position().x() // b4 has no predators, 1 neighbour
+          == b4.position().x() + b4.velocity().x() * d_t);
+    CHECK(flock.state()[3].position().y()
+          == b4.position().y() + b4.velocity().y() * d_t);
+    CHECK(flock.state()[3].velocity() == b4.velocity() + Velocity{.5, .55});
+    /// b5 has only b4 as neighbour (no close, no preds). Its d_v
+    // is expected to be the opposite as b4
+    CHECK(flock.state()[4].position().x()
+          == b5.position().x() + b5.velocity().x() * d_t);
+    CHECK(flock.state()[4].position().y()
+          == b5.position().y() + b5.velocity().y() * d_t);
+    CHECK(flock.state()[4].velocity() == (b5.velocity() + Velocity{-.5, -.55}));
+    CHECK(flock.state()[5].position().x() // b6_p has 1 prey and 1 competitor
+          == b6_p.position().x() + b6_p.velocity().x() * d_t);
+    CHECK(flock.state()[5].position().y()
+          == b6_p.position().y() + b6_p.velocity().y() * d_t);
+    CHECK(flock.state()[5].velocity()
+          == b6_p.velocity() + Velocity{-1., -1.}
+                 + Velocity{2.5, -3.5} * (std::sqrt(545. / 370000.)));
+    CHECK(flock.state()[6].position().x() // b7_p has a prey and no competitors
+          == b7_p.position().x() + b7_p.velocity().x() * d_t);
+    CHECK(flock.state()[6].position().y()
+          == b7_p.position().y() + b7_p.velocity().y() * d_t);
+    CHECK(flock.state()[6].velocity()
+          == b7_p.velocity()
+                 + Velocity{5., -4.} * .03 * (std::sqrt(26. / 41.)));
+    CHECK(flock.state()[7]
+              .position()
+              .x() // b8 has 1 close neighbour, 1 neighbour, no predators
+          == b8.position().x() + b8.velocity().x() * d_t);
+    CHECK(flock.state()[7].position().y()
+          == b8.position().y() + b8.velocity().y() * d_t);
+    CHECK(flock.state()[7].velocity().x() == 2.);
+    // CHECK(flock.state()[7].velocity().y() == doctest::Approx(7.717319387));
   }
 }
