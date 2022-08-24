@@ -197,18 +197,19 @@ TEST_CASE("Testing flying rules")
   {
     CHECK(seek(b1_p, flock, pars) == Velocity{0., 0.}); // predator with no prey
     CHECK(seek(b3_p, flock, pars) == Velocity{0., 0.}); // predator with no prey
+    CHECK(seek(b4_p, flock, pars).x()
+          == doctest::Approx(
+              (Velocity{1. / std::sqrt(197.), -14. / std::sqrt(197.)} / 20.)
+                  .x())); // pred with prey (3 regulars in sight)
     CHECK(
-        seek(b4_p, flock, pars).x()
-        == doctest::Approx((Velocity{1. / sqrt(197.), -14. / sqrt(197.)} / 20.)
-                               .x())); // pred with prey (3 regulars in sight)
-    CHECK(seek(b4_p, flock, pars).y()
-          == (Velocity{1. / sqrt(197.), -14. / sqrt(197.)} / 20.).y());
+        seek(b4_p, flock, pars).y()
+        == (Velocity{1. / std::sqrt(197.), -14. / std::sqrt(197.)} / 20.).y());
     CHECK(seek(b6_p, flock, pars).x()
           == doctest::Approx(
-              (Velocity{-1., -1.} / sqrt(50.))
+              (Velocity{-1., -1.} / std::sqrt(50.))
                   .x())); // pred with prey (only 1 regular in sight)
     CHECK(seek(b6_p, flock, pars).y()
-          == doctest::Approx((Velocity{-1., -1.} / sqrt(50.)).y()));
+          == doctest::Approx((Velocity{-1., -1.} / std::sqrt(50.)).y()));
     Boid b10{{12., 13.}, {-2., -2}};
     flock.push_back(b10);
     // predator with prey (1 reg in sight), case of norm(vel)==0.
@@ -270,7 +271,8 @@ TEST_CASE("Testing evolve")
     std::vector<Boid> boids{b1, b2, b3, b4, b5};
     Flock flock{boids};
     flock.evolve(pars);
-    CHECK(flock.state()[0].velocity().x() == b1.velocity().x() + 2. * sqrt(2.));
+    CHECK(flock.state()[0].velocity().x()
+          == b1.velocity().x() + 2. * std::sqrt(2.));
     CHECK(flock.state()[0].velocity().y()
           == b1.velocity().y()); // v_y unaltered
     CHECK(flock.state()[4].velocity().y() == b5.velocity().y() + 30.);
@@ -290,9 +292,9 @@ TEST_CASE("Testing evolve")
     Flock flock{boids};
     flock.evolve(pars1);
     CHECK(flock.state()[3].velocity().x()
-          == doctest::Approx(49. * .95 / sqrt(65.)));
+          == doctest::Approx(49. * .95 / std::sqrt(65.)));
     CHECK(flock.state()[3].velocity().y()
-          == doctest::Approx(28. * .95 / sqrt(65.)));
+          == doctest::Approx(28. * .95 / std::sqrt(65.)));
   }
   SUBCASE("6 regulars (no close neighbours), some have neighbours")
   {
@@ -404,20 +406,92 @@ TEST_CASE("Testing evolve")
     CHECK(flock.state()[1].position().y() // b6_p has no competitors
           == b6_p.position().y() + b6_p.velocity().y() * d_t);
     CHECK(flock.state()[1].velocity() == b6_p.velocity());
-    CHECK(flock.state()[2].position().x()// b7_p has 2 competitors
+    CHECK(flock.state()[2].position().x() // b7_p has 2 competitors
           == b7_p.position().x() + b7_p.velocity().x() * d_t);
     CHECK(flock.state()[2].position().y()
           == b7_p.position().y() + b7_p.velocity().y() * d_t);
-    CHECK(flock.state()[2].velocity() == b7_p.velocity()+ Velocity{1., 1.});
-    CHECK(flock.state()[3].position().x()// b8_p has 2 competitors
+    CHECK(flock.state()[2].velocity() == b7_p.velocity() + Velocity{1., 1.});
+    CHECK(flock.state()[3].position().x() // b8_p has 2 competitors
           == b8_p.position().x() + b8_p.velocity().x() * d_t);
     CHECK(flock.state()[3].position().y()
           == b8_p.position().y() + b8_p.velocity().y() * d_t);
-    CHECK(flock.state()[3].velocity() == b8_p.velocity()+ Velocity{1., -2.});
-    CHECK(flock.state()[4].position().x()// b9_p has 2 competitors
+    CHECK(flock.state()[3].velocity() == b8_p.velocity() + Velocity{1., -2.});
+    CHECK(flock.state()[4].position().x() // b9_p has 2 competitors
           == b9_p.position().x() + b9_p.velocity().x() * d_t);
     CHECK(flock.state()[4].position().y()
           == b9_p.position().y() + b9_p.velocity().y() * d_t);
-    CHECK(flock.state()[4].velocity() == b9_p.velocity()+ Velocity{-2., 1.});
+    CHECK(flock.state()[4].velocity() == b9_p.velocity() + Velocity{-2., 1.});
+  }
+  SUBCASE("one regular and one predator")
+  { // d_s_pred is 2.5 times greater than d_s
+    std::vector<Boid> boids{b2, b6_p};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 2); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK(flock.state()[1].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    // b2 can't see b6_p (not in angle of view) so he doesn't feel separation
+    CHECK(flock.state()[0].position().x()
+          == b2.position().x() + b2.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b2.position().y() + b2.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity() == b2.velocity());
+    // b6_p feels seek drive towards b2
+    CHECK(flock.state()[1].position().x()
+          == b6_p.position().x() + b6_p.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b6_p.position().y() + b6_p.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity().x()
+          == doctest::Approx(
+                 (b6_p.velocity() + (Velocity{2., 3.}) * (0.008770580193)).x())
+                 .epsilon(0.01));
+    CHECK(flock.state()[1].velocity().y()
+          == doctest::Approx(
+                 (b6_p.velocity() + (Velocity{2., 3.}) / std::sqrt(13000.)).y())
+                 .epsilon(0.1));
+  }
+  SUBCASE("one regular and one close predator")
+  { // d_s_pred is 2.5 times greater than d_s
+    b6_p.position() = {9., 9.};
+    std::vector<Boid> boids{b2, b6_p};
+    Flock flock{boids};
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 2); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK(flock.state()[1].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    // b2 feels (strong) separation from b6_p
+    CHECK(flock.state()[0].position().x()
+          == b2.position().x() + b2.velocity().x() * d_t);
+    CHECK(flock.state()[0].position().y()
+          == b2.position().y() + b2.velocity().y() * d_t);
+    CHECK(flock.state()[0].velocity()
+          == b2.velocity() + Velocity{-1., 1.} * pars.get_s_pred());
+    // b6_p feels seek drive towards b2
+    CHECK(flock.state()[1].position().x()
+          == b6_p.position().x() + b6_p.velocity().x() * d_t);
+    CHECK(flock.state()[1].position().y()
+          == b6_p.position().y() + b6_p.velocity().y() * d_t);
+    CHECK(flock.state()[1].velocity().x()
+          == doctest::Approx(
+                 (b6_p.velocity() + (Velocity{2., 3.}) * (0.008770580193)).x())
+                 .epsilon(0.01));
+    CHECK(flock.state()[1].velocity().y()
+          == doctest::Approx(
+                 (b6_p.velocity() + (Velocity{2., 3.}) / std::sqrt(13000.)).y())
+                 .epsilon(0.1));
+  }
+  SUBCASE("Generalization: regulars and predators, competitors, neighbours and "
+          "close neighbours, two consecutive evolutions: one regular going out "
+          "of grid after first evolution,")
+  {
+    b6_p.position() = {9., 9.};
+    Boid b8{{.5, 0.}, {1., -1.}}; // will cross y_min
+    Boid b9_p{{10., 10.}, {1., 3.}};
   }
 }
