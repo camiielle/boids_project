@@ -486,9 +486,10 @@ TEST_CASE("Testing evolve")
                  (b6_p.velocity() + (Velocity{2., 3.}) / std::sqrt(13000.)).y())
                  .epsilon(0.1));
   }
-  SUBCASE("Generalization: regulars and predators, competitors, neighbours and "
-          "close neighbours, two consecutive evolutions: one regular going out "
-          "of grid after first evolution,")
+  SUBCASE(
+      "Generalization: 6 regulars and 3 predators, competitors, neighbours and "
+      "close neighbours, two consecutive evolutions: one regular going out "
+      "of grid after first evolution,")
   {
     b6_p.position() = {9.5, 9.5};
     b4.velocity()   = {0., -1.};
@@ -497,6 +498,8 @@ TEST_CASE("Testing evolve")
     Boid b9_p{{10., 10.}, {1., 3.}, true};
     std::vector<Boid> boids{b1, b2, b3, b4, b5, b6_p, b7_p, b8, b9_p};
     Flock flock{boids};
+
+    // first evolution
     flock.evolve(pars);
     CHECK(flock.state().size() == 9); // size left unchanged
     // is_pred attribute left unchanged
@@ -562,7 +565,92 @@ TEST_CASE("Testing evolve")
           == b8.position().x() + b8.velocity().x() * d_t);
     CHECK(flock.state()[7].position().y()
           == b8.position().y() + b8.velocity().y() * d_t);
-    CHECK(flock.state()[7].velocity().x() == 2.);
-    // CHECK(flock.state()[7].velocity().y() == doctest::Approx(7.717319387));
+    CHECK(flock.state()[7].velocity().x()
+          == 2.); // v_x modified according to flocking behavior
+    CHECK(
+        flock.state()[7].velocity().y()
+        == doctest::Approx(6.555159043)); // v_y modified according to flocking
+    // behavior AND bound_position
+    CHECK(flock.state()[8].position().x() // b9_p has a prey and no competitors
+          == b9_p.position().x() + b9_p.velocity().x() * d_t);
+    CHECK(flock.state()[8].position().y()
+          == b9_p.position().y() + b9_p.velocity().y() * d_t);
+    CHECK(flock.state()[8].velocity()
+          == b9_p.velocity() + Velocity{-1., 2.} / (std::sqrt(1250.)));
+
+    // second evolution
+    flock.evolve(pars);
+    CHECK(flock.state().size() == 9); // size left unchanged
+    // is_pred attribute left unchanged
+    CHECK_FALSE(flock.state()[0].is_pred());
+    CHECK_FALSE(flock.state()[1].is_pred());
+    CHECK_FALSE(flock.state()[2].is_pred());
+    CHECK_FALSE(flock.state()[3].is_pred());
+    CHECK_FALSE(flock.state()[4].is_pred());
+    CHECK(flock.state()[5].is_pred());
+    CHECK(flock.state()[6].is_pred());
+    CHECK_FALSE(flock.state()[7].is_pred());
+    CHECK(flock.state()[8].is_pred());
+    // order unchanged, positions and velocities modified accordingly to flying
+    // rules
+    CHECK(flock.state()[0]
+              .position()
+              .x() // b1 has 1 close neighbour, 1 neighbour, no predators
+          == doctest::Approx(0.01375));
+    CHECK(flock.state()[0].position().y() == doctest::Approx(0.01525));
+    // CHECK(flock.state()[0].velocity()
+    // == Velocity{.325, .525} + );
+    CHECK(flock.state()[1].position().x() // b2 has 2 predators, no neighbours
+          == doctest::Approx(7.845));
+    CHECK(flock.state()[1].position().y() == doctest::Approx(10.065));
+    // CHECK(flock.state()[1].velocity()
+    // == b2.velocity() + (Velocity{-3.5, .5} * pars.get_s_pred()));
+    CHECK(flock.state()[2].position().x() // b3 has no predators nor neighbours
+          == doctest::Approx(12.98));
+    CHECK(flock.state()[2].position().y() == doctest::Approx(3.06));
+    CHECK(flock.state()[2].velocity() == b3.velocity());
+    CHECK(flock.state()[3].position().x() // b4 has no predators, 1 neighbour
+          == doctest::Approx(2.005));
+    CHECK(flock.state()[3].position().y() == doctest::Approx(4.9855));
+    //  CHECK(flock.state()[3].velocity() == b4.velocity() + Velocity{.5, .55});
+    /// b5 has only b4 as neighbour (no close, no preds). Its d_v
+    // is expected to be the opposite as b4
+    CHECK(flock.state()[4].position().x() == doctest::Approx(2.005));
+    CHECK(flock.state()[4].position().y() == doctest::Approx(2.1145));
+    // CHECK(flock.state()[4].velocity() == (b5.velocity() + Velocity{-.5,
+    // -.55}));
+    CHECK(flock.state()[5].position().x() // b6_p has 1 prey and 1 competitor
+          == doctest::Approx(9.530959483));
+    CHECK(flock.state()[5].position().y() == doctest::Approx(9.468656723));
+    // CHECK(flock.state()[5].velocity()
+    //    == b6_p.velocity() + Velocity{-1., -1.}
+    //  + Velocity{2.5, -3.5} * (std::sqrt(545. / 370000.)));
+    CHECK(flock.state()[6].position().x() // b7_p has a prey and no competitors
+          == doctest::Approx(4.0311945));
+    CHECK(flock.state()[6].position().y() == doctest::Approx(16.029044));
+    // CHECK(flock.state()[6].velocity()
+    //   == b7_p.velocity()
+    //    + Velocity{5., -4.} * .03 * (std::sqrt(26. / 41.)));
+    CHECK(flock.state()[7]
+              .position()
+              .x() // b8 has 1 close neighbour, 1 neighbour, no predators
+          == doctest::Approx(0.53));
+    // note that thanks to bound_position, b8 has re-entered the grid in the
+    // following evolution
+    CHECK(flock.state()[7].position().y() == doctest::Approx(0.05555159043));
+    // CHECK(flock.state()[7].velocity().x()
+    //  == 2.); // v_x modified according to flocking behavior
+    // CHECK(
+    //  flock.state()[7].velocity().y()
+    //  == doctest::Approx(6.555159043));
+    CHECK(flock.state()[8].position().x() // b9_p has a prey and no competitors
+          == doctest::Approx(10.01971716));
+    CHECK(flock.state()[8].position().y() == doctest::Approx(10.06056569));
+    //CHECK(flock.state()[8].velocity()
+        //  == b9_p.velocity() + Velocity{-1., 2.} / (std::sqrt(1250.)));
+
+    // Note that this way of writing the test: CHECK(flock.state()[0].position()
+    // == b1.position() + b1.velocity() * d_t); wouldn't work for 2nd evolution
+    // since boids in flock_ got updated, but not the local variables b1,b2 etc.
   }
 }
