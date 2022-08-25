@@ -2,6 +2,7 @@
 #include "flock.hpp"
 #include "doctest.h"
 #include "parameters.hpp"
+#include <random>
 
 TEST_CASE("testing rules' auxiliary functions")
 {
@@ -718,4 +719,24 @@ TEST_CASE("Testing simulate")
   CHECK(flock.state()[1].position() == Position{20., 10.});
   // checking state was saved for 5 times
   CHECK(states.size() == 5u);
+}
+
+TEST_CASE("Testing fill")
+{
+  Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 40};
+  std::random_device rd;
+  auto const seed{rd()};
+  std::vector<Boid> boids{};
+  Flock flock{fill(boids, pars, seed)};
+
+  // checking fill inserted exactly N_boids
+  CHECK(flock.size() == 40);
+  // checking limits of space were respected
+  CHECK(std::all_of(flock.state().begin(), flock.state().end(),
+                    [&](Boid const& b) {
+                      return b.position().x() >= pars.get_x_min()
+                          && b.position().x() <= pars.get_x_max()
+                          && b.position().y() >= pars.get_y_min()
+                          && b.position().y() <= pars.get_y_max();
+                    }));
 }
