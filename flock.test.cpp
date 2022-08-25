@@ -702,3 +702,20 @@ TEST_CASE("Testing evolve")
     // etc. didn't
   }
 }
+
+TEST_CASE("Testing simulate")
+{
+  Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 2};
+  // one regular and one predator, can't see each other
+  Boid b1{{0., 1.}, {1., 0.}};
+  Boid b2_p{{20., 0.}, {0., 1.}, true};
+  Flock flock{std::vector<Boid>{b1, b2_p}};
+  std::vector<std::vector<Boid>> states{};
+  simulate(flock, pars, states);
+
+  // checking flock evolved 10 times by confronting final positions
+  CHECK(flock.state()[0].position() == Position{10., 1.});
+  CHECK(flock.state()[1].position() == Position{20., 10.});
+  // checking state was saved for 5 times
+  CHECK(states.size() == 5u);
+}

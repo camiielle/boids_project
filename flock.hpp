@@ -4,7 +4,8 @@
 #include "parameters.hpp"
 #include <vector>
 
-// defining class Flock and declaring flocks' flying rules
+// defining class Flock, declaring flocks' flying rules, declaring functions
+// fill and simulate
 
 class Flock
 {
@@ -33,6 +34,7 @@ class Flock
   // clang-format on
 };
 
+// flying rules' auxiliary functions
 std::vector<Boid>& neighbours(Boid const& boid, Flock const& flock,
                               std::vector<Boid>& nbrs, double angle, double d);
 std::vector<Boid>& predators(Boid const& boid, Flock const& flock,
@@ -43,11 +45,19 @@ std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
                                double d_s);
 Boid const& find_prey(Boid const& boid, Flock const& flock, double angle);
 
+// flying rules' functions
 Velocity separation(Boid const& boid, Flock const& flock,
                     Parameters const& pars);
 Velocity alignment(Boid const& boid, Flock const& flock,
                    Parameters const& pars);
 Velocity cohesion(Boid const& boid, Flock const& flock, Parameters const& pars);
 Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars);
+
+std::vector<Boid>& fill(std::vector<Boid>& boids, Parameters const& pars,
+                        unsigned int seed);
+
+std::vector<std::vector<Boid>>&
+simulate(Flock& flock, Parameters const& pars,
+         std::vector<std::vector<Boid>>& states);
 
 #endif

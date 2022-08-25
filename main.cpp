@@ -1,6 +1,8 @@
 #include "boids.hpp"
+#include "flock.hpp"
 #include "parameters.hpp"
 #include "parser.hpp"
+#include <random>
 
 int main(int argc, char* argv[])
 {
@@ -47,10 +49,23 @@ int main(int argc, char* argv[])
                           c,        a,     max_speed, min_speed_fraction,
                           duration, steps, prescale,  N_boids};
 
-    std::cout << "Reached end of program\n";
+    // obtains seed to pass to random number engine
+    std::random_device rd;
+    auto const seed{rd()};
+    // fills empty vector with N_boids randomly generated and use it to
+    // initialize flock
+    std::vector<Boid> boids{};
+    Flock flock{fill(boids, pars, seed)};
 
+    // performs the simulation and saves its data in vector 'states'
+    std::vector<std::vector<Boid>> states;
+    simulate(flock, pars, states);
+
+    std::cout << states.size() << '\n';
+    std::cout << flock.size() << '\n';
   } catch (Invalid_Parameter const& err) {
     std::cerr << "Invalid Parameter: " << err.what() << '\n';
-  } catch (...) { //++++++++++++++ADD CODE HERE++++++++++++++++++++++}
+  } catch (...) {
+    std::cerr << "Unknown error occured\n";
   }
 }

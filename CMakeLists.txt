@@ -22,7 +22,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-
 
 # adds executable boids, to build from the given source files 
 # header files can, but don't have to, be reported as well
-add_executable(boids main.cpp)
+add_executable(boids main.cpp flock.cpp boids.cpp)
 add_subdirectory(Lyra)
 target_link_libraries(boids PUBLIC bfg::lyra)
 
