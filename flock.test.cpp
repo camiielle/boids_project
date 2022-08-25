@@ -723,20 +723,55 @@ TEST_CASE("Testing simulate")
 
 TEST_CASE("Testing fill")
 {
-  Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 40};
   std::random_device rd;
   auto const seed{rd()};
   std::vector<Boid> boids{};
-  Flock flock{fill(boids, pars, seed)};
 
-  // checking fill inserted exactly N_boids
-  CHECK(flock.size() == 40);
-  // checking limits of space were respected
-  CHECK(std::all_of(flock.state().begin(), flock.state().end(),
-                    [&](Boid const& b) {
-                      return b.position().x() >= pars.get_x_min()
-                          && b.position().x() <= pars.get_x_max()
-                          && b.position().y() >= pars.get_y_min()
-                          && b.position().y() <= pars.get_y_max();
-                    }));
+  SUBCASE("testing size and space limits")
+  {
+    Parameters const pars{90., 5.,      2.,  1., 1., 1.,
+                          100, .000005, 10., 10, 2,  40};
+
+    Flock flock{fill(boids, pars, seed)};
+
+    // checking fill inserted exactly N_boids
+    CHECK(flock.size() == 40);
+    // checking limits of space were respected
+    CHECK(std::all_of(flock.state().begin(), flock.state().end(),
+                      [&](Boid const& b) {
+                        return b.position().x() >= pars.get_x_min()
+                            && b.position().x() <= pars.get_x_max()
+                            && b.position().y() >= pars.get_y_min()
+                            && b.position().y() <= pars.get_y_max();
+                      }));
+  }
+
+  SUBCASE("testing with small N_boids")
+  {
+    Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 2};
+    Flock flock{fill(boids, pars, seed)};
+    CHECK(flock.size() == 2);
+    CHECK(std::all_of(flock.state().begin(), flock.state().end(),
+                      [&](Boid const& b) {
+                        return b.position().x() >= pars.get_x_min()
+                            && b.position().x() <= pars.get_x_max()
+                            && b.position().y() >= pars.get_y_min()
+                            && b.position().y() <= pars.get_y_max();
+                      }));
+  }
+
+  SUBCASE("testing with large N_boids")
+  {
+    Parameters const pars{90., 5.,      2.,  1., 1., 1.,
+                          100, .000005, 10., 10, 2,  100000};
+    Flock flock{fill(boids, pars, seed)};
+    CHECK(flock.size() == 100000);
+    CHECK(std::all_of(flock.state().begin(), flock.state().end(),
+                      [&](Boid const& b) {
+                        return b.position().x() >= pars.get_x_min()
+                            && b.position().x() <= pars.get_x_max()
+                            && b.position().y() >= pars.get_y_min()
+                            && b.position().y() <= pars.get_y_max();
+                      }));
+  }
 }
