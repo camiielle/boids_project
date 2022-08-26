@@ -56,8 +56,11 @@ int main(int argc, char* argv[])
     // obtains seed to pass to random number engine
     std::random_device rd;
     auto const seed{rd()};
+    // fills empty vector with N_boids randomly generated and uses it to
+    // initialize flock
+    std::vector<Boid> boids{};
+    Flock flock{fill(boids, pars, seed)};
 
-    
   } catch (Invalid_Parameter const& par_err) {
     std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
     return EXIT_FAILURE;
