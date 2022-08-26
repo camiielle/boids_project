@@ -18,7 +18,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-
 
 # requires the graphic component in SFML library, version 2.5
 #  dependencies are automatically identified
-#find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
 # adds executable boids, to build from the given source files 
 # header files can, but don't have to, be reported as well
@@ -29,15 +29,16 @@ target_link_libraries(boids PUBLIC bfg::lyra)
 
 # adds executable boid-sfml, to build from the given source files 
 # header files can, but don't have to, be reported as well
-# add_executable(boids-sfml main-sfml.cpp boid.cpp flock.cpp parameters.cpp)
+add_executable(boids-sfml main-sfml.cpp boids.cpp flock.cpp stats.cpp)
 # executable file depends on sfml-graphics and its dependencies
-# target_link_libraries(boids-sfml PRIVATE sfml-graphics)
+target_link_libraries(boids-sfml PRIVATE sfml-graphics)
+target_link_libraries(boids-sfml PUBLIC bfg::lyra)
 
 # if testing is enabled...
 #  to disable testing, pass -DBUILD_TESTING=OFF to cmake during the configuration phase
 if (BUILD_TESTING)
 
-# add executable parameters.t, to build from the given source files 
+# add executables to build from the given source files 
  add_executable(parameters.t parameters.test.cpp)
  add_executable(boids.t boids.test.cpp boids.cpp)
  add_executable(flock.t flock.test.cpp flock.cpp boids.cpp)
