@@ -6,17 +6,17 @@ double sum_distances(Boid const& boid, std::vector<Boid> const& state, int N);
 double sum_sq_distances(Boid const& boid, std::vector<Boid> const& state,
                         int N);
 
-TEST_CASE("testing mean_dist")
+TEST_CASE("testing mean distance")
 {
   Boid b1{{}, {1., 1.}};
   Boid b2{{0., 3.}, {5., 2.}};
   Boid b3{{3., 3.}, {8., 2.}};
   Boid b4{{3., 0.}, {-1., 2.}};
 
-  Boid b5{{6., 6.}, {1., 1.}};
-  Boid b6{{6., 9.}, {5., 2.}};
-  Boid b7{{9., 9.}, {8., 2.}};
-  Boid b8{{9., 6.}, {-1., 2.}};
+  Boid b5{{6., 6.}, {4., -4.}};
+  Boid b6{{6., 9.}, {7., -2.}};
+  Boid b7{{9., 9.}, {5.2, 9.}};
+  Boid b8{{9., 6.}, {-1., -7.}};
 
   std::vector<Boid> state4{b1, b2, b3, b4};
   std::vector<Boid> state8{b1, b2, b3, b4, b5, b6, b7, b8};
@@ -96,9 +96,25 @@ TEST_CASE("testing mean_dist")
     CHECK(mean_dist(state4).std_dev
           == doctest::Approx(std::sqrt(0.4117749006)).epsilon(0.1));
     // eight elements
-    CHECK(mean_dist(state8).mean
-          == doctest::Approx(6.462690999659106071428571));
+    CHECK(mean_dist(state8).mean == doctest::Approx(6.4626909996591));
     CHECK(mean_dist(state8).std_dev
-          == doctest::Approx(3.16544714062177342853047).epsilon(0.1));
+          == doctest::Approx(3.1654471406217).epsilon(0.1));
+  }
+
+  SUBCASE("testing mean_speed")
+  {
+    std::vector<Boid> state4B{b5, b6, b7, b8};
+
+        // four elements
+    CHECK(mean_speed(state4).mean == doctest::Approx(4.32041439));
+    CHECK(mean_speed(state4).std_dev == doctest::Approx(3.127090127));
+    // other four  elements
+    CHECK(mean_speed(state4B).mean == doctest::Approx(7.600565));
+    CHECK(mean_speed(state4B).std_dev
+          == doctest::Approx(1.997135175).epsilon(0.01));
+
+    // eight elements
+    CHECK(mean_speed(state8).mean == doctest::Approx(5.96048984));
+    CHECK(mean_speed(state8).std_dev == doctest::Approx(2.89737).epsilon(0.1));
   }
 }

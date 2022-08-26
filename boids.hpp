@@ -5,7 +5,7 @@
 #include <cmath>
 #include <utility>
 
-// Vector2D, representing the algebric entity 'vector' in 2D Euclidean space
+// Vector2D, representing the algebraic entity 'vector' in 2D Euclidean space
 
 struct Vector2D : public std::pair<double, double>
 {
@@ -53,7 +53,7 @@ T operator/(T const& v, double scalar)
   return T{v.first / scalar, v.second / scalar};
 }
 
-// Distringuishing between vectors with different physical meanings (i.e. vector
+// Distinguishing between vectors with different physical meanings (i.e. vector
 // position and vector velocity)
 struct Position : public Vector2D
 {
