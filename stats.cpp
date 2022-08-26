@@ -78,7 +78,7 @@ void print_state(std::vector<Boid> const& state)
 
   std::cout << std::setprecision(3) << std::fixed << std::setw(8)
             << distance.mean << " \u00b1 " << std::setw(7) << distance.std_dev
-            << std::setw(8) << std::internal << '|' << std::setw(13)
+            << std::setw(8) << '|' << std::setw(13)
             << speed.mean << " \u00b1 " << std::setw(7) << speed.std_dev
             << '\n';
 }

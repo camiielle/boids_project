@@ -3,6 +3,7 @@
 #include "parameters.hpp"
 #include "parser.hpp"
 #include "stats.hpp"
+
 #include <random>
 
 int main(int argc, char* argv[])
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
     // obtains seed to pass to random number engine
     std::random_device rd;
     auto const seed{rd()};
-    // fills empty vector with N_boids randomly generated and use it to
+    // fills empty vector with N_boids randomly generated and uses it to
     // initialize flock
     std::vector<Boid> boids{};
     Flock flock{fill(boids, pars, seed)};
@@ -63,7 +64,6 @@ int main(int argc, char* argv[])
     simulate(flock, pars, states);
 
     // data analysis and printing
-
     std::cout << "\n Report for each of the stored states:\n";
     std::cout << "\n AVERAGE DISTANCE:              AVERAGE SPEED: \n\n";
     std::for_each(states.begin(), states.end(), print_state);
@@ -72,9 +72,14 @@ int main(int argc, char* argv[])
     std::cout << '\n' << "SUMMARY: Parameters used in the simulation:\n\n";
     print_parameters(pars);
 
-  } catch (Invalid_Parameter const& err) {
-    std::cerr << "Invalid Parameter: " << err.what() << '\n';
+  } catch (Invalid_Parameter const& par_err) {
+    std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
+    return EXIT_FAILURE;
+  } catch (std::exception const& err) {
+    std::cerr << "An error occurred: " << err.what() << '\n';
+    return EXIT_FAILURE;
   } catch (...) {
-    std::cerr << "Unknown error occured\n";
+    std::cerr << "An unknown error occured\n";
+    return EXIT_FAILURE;
   }
 }
