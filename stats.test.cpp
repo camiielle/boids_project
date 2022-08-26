@@ -94,27 +94,28 @@ TEST_CASE("testing mean distance")
     // four elements
     CHECK(mean_dist(state4).mean == doctest::Approx(2. + std::sqrt(2.)));
     CHECK(mean_dist(state4).std_dev
-          == doctest::Approx(std::sqrt(0.4117749006)).epsilon(0.1));
+          == doctest::Approx(std::sqrt(0.4117749006)));
+
     // eight elements
     CHECK(mean_dist(state8).mean == doctest::Approx(6.4626909996591));
-    CHECK(mean_dist(state8).std_dev
-          == doctest::Approx(3.1654471406217).epsilon(0.1));
+    CHECK(mean_dist(state8).std_dev == doctest::Approx(3.1654471406217));
   }
 
   SUBCASE("testing mean_speed")
   {
     std::vector<Boid> state4B{b5, b6, b7, b8};
 
-        // four elements
+    // four elements
     CHECK(mean_speed(state4).mean == doctest::Approx(4.32041439));
     CHECK(mean_speed(state4).std_dev == doctest::Approx(3.127090127));
-    // other four  elements
+
+    // other four elements
     CHECK(mean_speed(state4B).mean == doctest::Approx(7.600565));
     CHECK(mean_speed(state4B).std_dev
-          == doctest::Approx(1.997135175).epsilon(0.01));
+          == doctest::Approx(1.997135175));
 
     // eight elements
     CHECK(mean_speed(state8).mean == doctest::Approx(5.96048984));
-    CHECK(mean_speed(state8).std_dev == doctest::Approx(2.89737).epsilon(0.1));
+    CHECK(mean_speed(state8).std_dev == doctest::Approx(2.995722));
   }
 }

@@ -43,7 +43,7 @@ Result mean_dist(std::vector<Boid> const& state)
   double mean_dist{sum_dist / n};
   double mean_sq_dist{sum_sq_dist / n};
   double std_dev{
-      std::sqrt((n / (n - 1)) * (mean_sq_dist - mean_dist * mean_dist))};
+      std::sqrt(n / (n - 1.) * (mean_sq_dist - mean_dist * mean_dist))};
 
   return {mean_dist, std_dev};
 }
