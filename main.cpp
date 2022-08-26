@@ -2,6 +2,7 @@
 #include "flock.hpp"
 #include "parameters.hpp"
 #include "parser.hpp"
+#include "stats.hpp"
 #include <random>
 
 int main(int argc, char* argv[])
@@ -13,7 +14,7 @@ int main(int argc, char* argv[])
     double d_s{3.5};
     double s{1.5};
     double c{.1};
-    double a{1.};
+    double a{1.6};
     double max_speed{80};
     double min_speed_fraction{.000005};
     double duration{30.};
@@ -61,8 +62,16 @@ int main(int argc, char* argv[])
     std::vector<std::vector<Boid>> states;
     simulate(flock, pars, states);
 
-    std::cout << states.size() << '\n';
-    std::cout << flock.size() << '\n';
+    // data analysis and printing
+
+    std::cout << "\n Report for each of the stored states:\n";
+    std::cout << "\n AVERAGE DISTANCE:              AVERAGE SPEED: \n\n";
+    std::for_each(states.begin(), states.end(), print_state);
+
+    std::cout << '\n' << std::setfill('=') << std::setw(50);
+    std::cout << '\n' << "SUMMARY: Parameters used in the simulation:\n\n";
+    print_parameters(pars);
+
   } catch (Invalid_Parameter const& err) {
     std::cerr << "Invalid Parameter: " << err.what() << '\n';
   } catch (...) {

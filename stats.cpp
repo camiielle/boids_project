@@ -1,7 +1,7 @@
 #include "stats.hpp"
 #include <algorithm>
-#include <numeric>
 #include <cmath>
+#include <numeric>
 
 // auxiliary function, calculates sum of pair distances between boid and all
 // others after it in the vector
@@ -69,4 +69,16 @@ Result mean_speed(std::vector<Boid> const& state)
       std::sqrt(N / (N - 1.) * (mean_sq_speed - mean_speed * mean_speed))};
 
   return {mean_speed, std_dev};
+}
+
+void print_state(std::vector<Boid> const& state)
+{
+  Result distance{mean_dist(state)};
+  Result speed{mean_speed(state)};
+
+  std::cout << std::setprecision(3) << std::fixed << std::setw(8)
+            << distance.mean << " \u00b1 " << std::setw(7) << distance.std_dev
+            << std::setw(8) << std::internal << '|' << std::setw(13)
+            << speed.mean << " \u00b1 " << std::setw(7) << speed.std_dev
+            << '\n';
 }
