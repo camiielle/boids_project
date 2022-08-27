@@ -272,6 +272,7 @@ std::vector<Boid>& fill(std::vector<Boid>& boids, Parameters const& pars,
   return boids;
 }
 
+#ifndef GRAPHICS
 // evolves flock for [steps] times and saves state of the flock in a vector
 // every [prescale] steps
 std::vector<std::vector<Boid>>& simulate(Flock& flock, Parameters const& pars,
@@ -286,3 +287,4 @@ std::vector<std::vector<Boid>>& simulate(Flock& flock, Parameters const& pars,
 
   return states;
 }
+#endif

@@ -47,9 +47,12 @@ int main(int argc, char* argv[])
 
     assert(result && (!show_help));
 
+    int const prescale_limit{steps};
+
     Parameters const pars{angle,    d,     d_s,       s,
                           c,        a,     max_speed, min_speed_fraction,
-                          duration, steps, prescale,  N_boids};
+                          duration, steps, prescale,  prescale_limit,
+                          N_boids};
 
     // obtains seed to pass to random number engine
     std::random_device rd;
@@ -74,6 +77,9 @@ int main(int argc, char* argv[])
 
   } catch (Invalid_Parameter const& par_err) {
     std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
+    std::cerr << "use flags -? , -h or --help for input parameters' "
+                 "instructions"
+              << '\n';
     return EXIT_FAILURE;
   } catch (std::exception const& err) {
     std::cerr << "An error occurred: " << err.what() << '\n';

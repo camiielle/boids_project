@@ -131,8 +131,8 @@ TEST_CASE("testing rules' auxiliary functions")
 
 TEST_CASE("Testing flying rules")
 {
-  Parameters const pars{190., 5.,      2.,  1.,   1., 1.,
-                        100,  .000005, 30., 3000, 60, 120};
+  Parameters const pars{190.,    5.,  2.,   1., 1.,   1., 100,
+                        .000005, 30., 3000, 60, 3000, 120};
   // d_s_pred is 2.5 times greater than d_s
   Boid b1_p{{10., 12.}, {2., 4.}, true};
   Boid b2{{-8., -12.}, {-2., -4.}};
@@ -220,8 +220,8 @@ TEST_CASE("Testing flying rules")
 
 TEST_CASE("Testing evolve")
 {
-  Parameters const pars{300., 3.,      1.,  2.,   .5, 1.,
-                        100., .000005, 30., 3000, 60, 100};
+  Parameters const pars{300.,    3.,  1.,   2., .5,   1., 100.,
+                        .000005, 30., 3000, 60, 3000, 100};
   Boid b1{{}, {1., 1.}};
   Boid b2{{8., 10.}, {1., 2.}};
   Boid b3{{13., 3.}, {-1., 3.}};
@@ -294,8 +294,8 @@ TEST_CASE("Testing evolve")
     // when evolve is called
     b4.position() = {.001, 5.};
     b4.velocity() = {-3., 4.};
-    Parameters const pars1{270., 3.,      1.,  2.,   .5, 1.,
-                           7.,   .000005, 30., 3000, 60, 100};
+    Parameters const pars1{270.,    3.,  1.,   2., .5,   1., 7.,
+                           .000005, 30., 3000, 60, 3000, 100};
     std::vector<Boid> boids{b1, b2, b3, b4};
     Flock flock{boids};
     flock.evolve(pars1);
@@ -706,7 +706,8 @@ TEST_CASE("Testing evolve")
 
 TEST_CASE("Testing simulate")
 {
-  Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 2};
+  Parameters const pars{90.,     5.,  2., 1., 1., 1., 100,
+                        .000005, 10., 10, 2,  10, 2};
   // one regular and one predator, can't see each other
   Boid b1{{0., 1.}, {1., 0.}};
   Boid b2_p{{20., 0.}, {0., 1.}, true};
@@ -729,8 +730,8 @@ TEST_CASE("Testing fill")
 
   SUBCASE("testing size and space limits")
   {
-    Parameters const pars{90., 5.,      2.,  1., 1., 1.,
-                          100, .000005, 10., 10, 2,  40};
+    Parameters const pars{90.,     5.,  2., 1., 1., 1., 100,
+                          .000005, 10., 10, 2,  10, 40};
 
     Flock flock{fill(boids, pars, seed)};
 
@@ -748,7 +749,8 @@ TEST_CASE("Testing fill")
 
   SUBCASE("testing with small N_boids")
   {
-    Parameters const pars{90., 5., 2., 1., 1., 1., 100, .000005, 10., 10, 2, 2};
+    Parameters const pars{90.,     5.,  2., 1., 1., 1., 100,
+                          .000005, 10., 10, 2,  10, 2};
     Flock flock{fill(boids, pars, seed)};
     CHECK(flock.size() == 2);
     CHECK(std::all_of(flock.state().begin(), flock.state().end(),
@@ -762,8 +764,8 @@ TEST_CASE("Testing fill")
 
   SUBCASE("testing with large N_boids")
   {
-    Parameters const pars{90., 5.,      2.,  1., 1., 1.,
-                          100, .000005, 10., 10, 2,  100000};
+    Parameters const pars{90.,     5.,  2., 1., 1., 1.,    100,
+                          .000005, 10., 10, 2,  10, 100000};
     Flock flock{fill(boids, pars, seed)};
     CHECK(flock.size() == 100000);
     CHECK(std::all_of(flock.state().begin(), flock.state().end(),
