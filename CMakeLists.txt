@@ -29,7 +29,7 @@ target_link_libraries(boids PRIVATE bfg::lyra)
 
 # adds executable boid-sfml, to build from the given source files 
 # header files can, but don't have to, be reported as well
-add_executable(boids-sfml main-sfml.cpp boids.cpp flock.cpp stats.cpp)
+add_executable(boids-sfml main-sfml.cpp boids.cpp flock.cpp graphics.cpp)
 # executable file depends on sfml-graphics and its dependencies
 target_link_libraries(boids-sfml PRIVATE sfml-graphics)
 target_link_libraries(boids-sfml PRIVATE bfg::lyra)

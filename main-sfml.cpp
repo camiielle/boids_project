@@ -1,5 +1,6 @@
 #include "boids.hpp"
 #include "flock.hpp"
+#include "graphics.hpp"
 #include "parameters.hpp"
 #include "parser-sfml.hpp"
 #include "stats.hpp"
@@ -75,6 +76,11 @@ int main(int argc, char* argv[])
     // initialize flock
     std::vector<Boid> boids{};
     Flock flock{fill(boids, pars, seed)};
+
+    // graphics
+    sf::RenderWindow window(sf::VideoMode(display_width, display_height),
+                            "Flock simulation");
+    game_loop(window, flock, pars, seed);
 
   } catch (Invalid_Parameter const& par_err) {
     std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
