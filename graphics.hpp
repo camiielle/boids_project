@@ -4,9 +4,9 @@
 #include "flock.hpp"
 #include "parameters.hpp"
 
-auto evolve(Flock& flock, Parameters const& pars);
+void draw_state(sf::RenderWindow& window, std::vector<Boid> const& state);
 
-void draw_boid(sf::RenderWindow& window, Boid const& boid);
+auto evolve(Flock& flock, Parameters const& pars);
 
 void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
                unsigned int seed);

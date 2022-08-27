@@ -5,6 +5,8 @@
 #include <cmath>
 #include <utility>
 
+constexpr double pi = 3.14159265358979323846;
+
 // Vector2D, representing the algebraic entity 'vector' in 2D Euclidean space
 
 struct Vector2D : public std::pair<double, double>
@@ -91,6 +93,6 @@ double distance(Boid const& b1, Boid const& b2);
 bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view);
 
 Velocity& bound_position(Boid& b, double x_min, double x_max, double y_min,
-                        double y_max);
+                         double y_max);
 
 #endif

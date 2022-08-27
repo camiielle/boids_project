@@ -76,7 +76,6 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
   }
   // calculates angle in range [0 , π] between velocity of b1 and difference
   // of positions between b2 and b1
-  constexpr double pi = 3.14159265358979323846;
   auto pos_diff{b2.position() - b1.position()};
   double scalar_prod{pos_diff.x() * b1.velocity().x()
                      + pos_diff.y() * b1.velocity().y()};
