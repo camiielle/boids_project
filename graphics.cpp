@@ -1,5 +1,7 @@
 #include "graphics.hpp"
+#include <random>
 
+// draws all boids in state, representing each boid as a triangle
 void draw_state(sf::RenderWindow& window, std::vector<Boid> const& state)
 {
   // creates an array of vertices defining a Triangles primitive (i.e. a set of
@@ -55,7 +57,64 @@ auto evolve(Flock& flock, Parameters const& pars)
   return flock.state();
 }
 
+// adds pred with position equal to mouse position, random velocity
+void add_predator(Position const& position, Flock& flock,
+                  Parameters const& pars, unsigned int seed)
+{
+  assert(position.x() >= pars.get_x_min() && position.x() <= pars.get_x_max());
+  assert(position.y() >= pars.get_y_min() && position.y() <= pars.get_y_max());
+
+  int init_size{flock.size()};
+  std::default_random_engine eng(seed);
+  std::uniform_real_distribution<double> unidist_v(
+      -pars.get_max_speed() / std::sqrt(2.),
+      pars.get_max_speed() / std::sqrt(2.));
+  Boid boid{position, {unidist_v(eng), unidist_v(eng)}, true};
+  normalize(boid.velocity(), pars.get_min_speed(), pars.get_max_speed());
+
+  assert(boid.is_pred());
+  flock.push_back(boid);
+  assert(init_size + 1 == flock.size());
+}
+
 void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
-               unsigned int seed){
-window.setFramerateLimit (pars.get_fps());
-               }
+               unsigned int seed)
+{
+  window.setFramerateLimit(pars.get_fps());
+  std::vector<Boid> state{};
+
+  while (window.isOpen()) {
+    // #1 processing events:
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      switch (event.type) {
+      // window closed
+      case sf::Event::Closed:
+        window.close();
+        break;
+      // Escape key pressed
+      case sf::Event::KeyPressed:
+        if (event.key.code == sf::Keyboard::Escape) {
+          window.close();
+          break;
+        }
+      default:
+        break;
+      }
+    }
+
+    // #2 evolving the scene:
+    window.clear(sf::Color::White);
+    state = evolve(flock, pars);
+    draw_state(window, state);
+    // predator can be added by pressing left mouse button (pressing,click,)
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+      auto mouse_position{sf::Mouse::getPosition(window)};
+      add_predator(Position{mouse_position.x, mouse_position.y}, flock, pars,
+                   seed);
+    }
+
+    // #3 displaying the evolved scene:
+    window.display();
+  }
+}
