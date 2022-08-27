@@ -24,7 +24,7 @@ find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 # header files can, but don't have to, be reported as well
 add_executable(boids main.cpp flock.cpp boids.cpp stats.cpp)
 add_subdirectory(Lyra)
-target_link_libraries(boids PUBLIC bfg::lyra)
+target_link_libraries(boids PRIVATE bfg::lyra)
 
 
 # adds executable boid-sfml, to build from the given source files 
@@ -32,7 +32,9 @@ target_link_libraries(boids PUBLIC bfg::lyra)
 add_executable(boids-sfml main-sfml.cpp boids.cpp flock.cpp stats.cpp)
 # executable file depends on sfml-graphics and its dependencies
 target_link_libraries(boids-sfml PRIVATE sfml-graphics)
-target_link_libraries(boids-sfml PUBLIC bfg::lyra)
+target_link_libraries(boids-sfml PRIVATE bfg::lyra)
+target_compile_definitions(boids-sfml PRIVATE GRAPHICS)
+
 
 # if testing is enabled...
 #  to disable testing, pass -DBUILD_TESTING=OFF to cmake during the configuration phase
