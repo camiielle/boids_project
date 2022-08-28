@@ -6,7 +6,7 @@
 
 void draw_state(sf::RenderWindow& window, std::vector<Boid> const& state);
 
-auto evolve(Flock& flock, Parameters const& pars);
+std::vector<Boid> evolve(Flock& flock, Parameters const& pars,sf::Time delta_t);
 
 void add_predator(Position const& pos, Flock& flock, Parameters const& pars,
                   unsigned int seed);

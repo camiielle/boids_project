@@ -176,8 +176,13 @@ Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
 {
   // note that find_prey will assert internally that boid is a pred
   auto prey{find_prey(boid, flock, pars.get_angle())};
+
   if (prey.is_pred()) { // this means find_prey returned boid itself (i.e. no
                         // preys in sight)
+    return {0., 0.};
+  }
+  if (in_corner(prey, pars.get_x_max(),
+                pars.get_y_max())) { // corners represent preys' refuge
     return {0., 0.};
   } else {
     auto pos_diff{prey.position() - boid.position()};
@@ -212,9 +217,9 @@ Boid Flock::solve(Boid const& boid, Parameters const& pars) const
   Boid b_f{(boid.is_pred()) ? Boid{x_f, v_f, true} : Boid{x_f, v_f}};
   // Boid returned from solve is always "valid", i.e bound_position has been
   // applied and speed is within limits:
-  normalize(bound_position(b_f, pars.get_x_min(), pars.get_x_max(),
-                           pars.get_y_min(), pars.get_y_max()),
-            pars.get_min_speed(), pars.get_max_speed());
+  bound_position(b_f, pars.get_x_min(), pars.get_x_max(), pars.get_y_min(),
+                 pars.get_y_max()),
+      normalize(b_f.velocity(), pars.get_min_speed(), pars.get_max_speed());
   return b_f;
 }
 

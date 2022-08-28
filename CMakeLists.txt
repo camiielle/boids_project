@@ -36,6 +36,7 @@ target_link_libraries(boids-sfml PRIVATE bfg::lyra)
 target_compile_definitions(boids-sfml PRIVATE GRAPHICS)
 
 
+
 # if testing is enabled...
 #  to disable testing, pass -DBUILD_TESTING=OFF to cmake during the configuration phase
 if (BUILD_TESTING)

@@ -92,6 +92,8 @@ double distance(Boid const& b1, Boid const& b2);
 
 bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view);
 
+bool in_corner(Boid const& boid, double x_max, double y_max);
+
 Velocity& bound_position(Boid& b, double x_min, double x_max, double y_min,
                          double y_max);
 

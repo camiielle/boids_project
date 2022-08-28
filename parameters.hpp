@@ -56,8 +56,8 @@ class Parameters
   double x_min_{0.};
   double y_min_{0.};
 #ifdef GRAPHICS
-  double x_max_{.9 * sf::VideoMode::getDesktopMode().width};
-  double y_max_{.9 * sf::VideoMode::getDesktopMode().height};
+  double x_max_{.7 * sf::VideoMode::getDesktopMode().width};
+  double y_max_{.7 * sf::VideoMode::getDesktopMode().height};
 #endif
 #ifndef GRAPHICS
   double x_max_{100.};
@@ -94,8 +94,8 @@ class Parameters
       , prescale_or_fps_{prescale_or_fps}
       , prescale_or_fps_limit_{prescale_or_fps_limit}
       , N_boids_{N_boids}
-      , d_s_pred_{2.5 * d_s} // boids' separation rule from predators has larger
-      , s_pred_{2.5 * s} // separation distance and highest separation factor
+      , d_s_pred_{7. * d_s} // boids' separation rule from predators has larger
+      , s_pred_{10. * s} // separation distance and highest separation factor
 
   {
     is_in_range(angle_, 0., 360., "angle-of-view");
