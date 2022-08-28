@@ -77,6 +77,7 @@ int main(int argc, char* argv[])
     std::cout << '\n' << "    SUMMARY: Parameters used in the simulation\n\n";
     print_parameters(pars);
 
+    // Saves data if asked for
     if (save_data) {
       write_data(states);
     }

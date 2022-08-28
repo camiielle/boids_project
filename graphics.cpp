@@ -99,9 +99,9 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters& pars,
       case sf::Event::KeyPressed:
         if (event.key.code == sf::Keyboard::Escape) {
           window.close();
-          break;
         }
-      // catch the resize events
+        break;
+      // handle the resize events
       case sf::Event::Resized:
         // update the view to the new size of the window
         if (std::max(pars.get_d_s_pred(), pars.get_d())

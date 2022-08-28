@@ -84,6 +84,7 @@ void print_state(std::vector<Boid> const& state)
             << std::setw(7) << speed.std_dev << '\n';
 }
 
+// writes data from the analysis to file indicated by user
 void write_data(std::vector<std::vector<Boid>> const& states)
 {
   std::cout << "\nPlease write name of file data will be saved in, then "
