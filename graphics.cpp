@@ -83,7 +83,7 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters& pars,
   std::vector<Boid> state{};
   window.setFramerateLimit(pars.get_fps());
   sf::Texture t;
-  t.loadFromFile("bluesky.jpg.png");
+  t.loadFromFile("bigsky.png");
   sf::Sprite s(t);
 
   while (window.isOpen()) {
