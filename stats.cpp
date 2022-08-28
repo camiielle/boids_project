@@ -84,8 +84,18 @@ void print_state(std::vector<Boid> const& state)
             << std::setw(7) << speed.std_dev << '\n';
 }
 
-void write_data(std::vector<std::vector<Boid>> const& states, std::ofstream& os)
+void write_data(std::vector<std::vector<Boid>> const& states)
 {
+  std::cout << "\nPlease write name of file data will be saved in, then "
+               "press ENTER to continue. (.txt "
+               "extension added automatically).\n";
+  std::string filename;
+  std::getline(std::cin, filename);    // reads until the first newline
+  std::ofstream os{filename + ".txt"}; // opens file for writing
+  if (!os) {
+    throw std::ios_base::failure{"ERROR: Cannot open file " + filename
+                                 + ".txt\n"};
+  }
   std::ostringstream data;
   for (auto const& state : states) {
     Result distance{mean_dist(state)};
@@ -95,4 +105,6 @@ void write_data(std::vector<std::vector<Boid>> const& states, std::ofstream& os)
          << std::setw(9) << speed.std_dev << std::endl;
   }
   os << data.str();
+  std::cout << "SUCCESS! Data have been saved to file: " + filename
+                   + ".txt in current directory\n";
 }

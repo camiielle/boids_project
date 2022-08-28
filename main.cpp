@@ -78,26 +78,17 @@ int main(int argc, char* argv[])
     print_parameters(pars);
 
     if (save_data) {
-      std::cout << "\nPlease write name of file data will be saved in, then "
-                   "press ENTER to continue. (.txt "
-                   "extension added automatically).\n";
-      std::string filename;
-      std::getline(std::cin, filename);    // reads until the first newline
-      std::ofstream os{filename + ".txt"}; // opens file for writing
-      if (!os) {
-        std::cerr << "ERROR: Cannot open file\n";
-        return EXIT_FAILURE;
-      } else {
-        write_data(states, os);
-        std::cout << "SUCCESS! Data have been saved to file: " + filename
-                         + ".txt in current directory\n";
-      }
+      write_data(states);
     }
+
   } catch (Invalid_Parameter const& par_err) {
     std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
     std::cerr << "use flags -? , -h or --help for input parameters' "
                  "instructions"
               << '\n';
+    return EXIT_FAILURE;
+  } catch (const std::ios_base::failure& file_err) {
+    std::cout << file_err.what() << '\n';
     return EXIT_FAILURE;
   } catch (std::exception const& err) {
     std::cerr << "An error occurred: " << err.what() << '\n';
