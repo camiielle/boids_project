@@ -33,22 +33,21 @@ Vector2D& Vector2D::operator*=(double scalar)
 // keeping speed in the allowed limits (speed modified, direction unaltered)
 Velocity& normalize(Velocity& v, double min_speed, double max_speed)
 {
-  if (norm(v) >= max_speed) {
-    v *= (0.95 * max_speed
-          / norm(v)); // setting new speed a little below the max
+  if (norm(v) >= max_speed) { // sets new speed a little below the max
+    v *= (0.95 * max_speed / norm(v));
   }
-  if (norm(v) == 0.) { // setting new speed a little above the min
+  if (norm(v) == 0.) { // sets direction, sets new speed a little above the min
     v = Velocity{1., 1.} * (1.05 * min_speed / std::sqrt(2.));
   }
-  if (norm(v) <= min_speed) {
+  if (norm(v) <= min_speed) { // sets new speed a little above the min
     v *= 1.05 * min_speed / norm(v);
   }
   assert(norm(v) > min_speed && norm(v) < max_speed);
   return v;
 }
 
-// Boid ctor overloading: 1st one will be used to construct predators, 2nd
-// for regular boids
+// Boid constructor overloading: 1st one will be used to construct predators,
+// 2nd for regular boids
 Boid::Boid(Position p, Velocity v, bool is_pred)
     : p_{p}
     , v_{v}
