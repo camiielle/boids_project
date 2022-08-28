@@ -67,10 +67,10 @@ TEST_CASE("testing Parameters")
   {
     CHECK_THROWS_AS(
         (Parameters{-1., 1., .1, 1., 1., 1., 1., .1, 1., 2, 1, 2, 2}),
-        std::runtime_error); // one negative value
+        Invalid_Parameter); // one negative value
     CHECK_THROWS_AS(
         (Parameters{1., 1., 11, 1., 1., 1., 1., .1, 1., 2, 1, 2, 2}),
-        std::runtime_error); // one value greater than superior limit
+        Invalid_Parameter); // one value greater than superior limit
 
     // mixing negative, limit and greater-than-superior-limit values, checking
     // that constructor's statements are executed in order, as expected
