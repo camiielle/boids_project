@@ -14,22 +14,22 @@ int main(int argc, char* argv[])
 {
   try {
     // default values are modified only if an input value is specified
-    double angle{300.};
-    double d{35.};
-    double d_s{3.5};
-    double s{1.5};
-    double c{.1};
-    double a{1.6};
-    double max_speed{80};
-    double min_speed_fraction{.000005};
+    double angle{310.};
+    double d{45.};
+    double d_s{10.};
+    double s{4.9};
+    double c{.0015};
+    double a{.1};
+    double max_speed{500};
+    double min_speed_fraction{.5};
     int delta_t{1};
-    int fps{30};
-    int N_boids{120};
+    int fps{60};
+    int N_boids{80};
     auto show_help{false};
 
     // display width and height
-    double const display_width{.9 * sf::VideoMode::getDesktopMode().width};
-    double const display_height{.9 * sf::VideoMode::getDesktopMode().height};
+    double const display_width{.7 * sf::VideoMode::getDesktopMode().width};
+    double const display_height{.7 * sf::VideoMode::getDesktopMode().height};
 
     // Parser with multiple option arguments and help option
     auto parser = get_parser(angle, d, d_s, s, c, a, max_speed,
