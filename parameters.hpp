@@ -95,7 +95,7 @@ class Parameters
       , prescale_or_fps_limit_{prescale_or_fps_limit}
       , N_boids_{N_boids}
       , d_s_pred_{7. * d_s} // boids' separation rule from predators has larger
-      , s_pred_{10. * s} // separation distance and highest separation factor
+      , s_pred_{10. * s}    // separation distance and highest separation factor
 
   {
     is_in_range(angle_, 0., 360., "angle-of-view");
@@ -148,6 +148,8 @@ class Parameters
   double get_x_max() const{return x_max_;}
   double get_y_min() const{return y_min_;}
   double get_y_max() const{return y_max_;}
+  double& set_x_max(){return x_max_;}
+  double& set_y_max(){return y_max_;}
   double get_d_s_pred() const{return d_s_pred_;}
   double get_s_pred() const{return s_pred_;}
   // clang-format on

@@ -58,8 +58,8 @@ auto evolve(Flock& flock, Parameters const& pars)
 }
 
 // adds pred with position equal to mouse position, random velocity
-void add_predator(Position const& position, Flock& flock,
-                  Parameters const& pars, unsigned int seed)
+void add_predator(Position const& position, Flock& flock, Parameters& pars,
+                  unsigned int seed)
 {
   assert(position.x() >= pars.get_x_min() && position.x() <= pars.get_x_max());
   assert(position.y() >= pars.get_y_min() && position.y() <= pars.get_y_max());
@@ -77,10 +77,14 @@ void add_predator(Position const& position, Flock& flock,
   assert(init_size + 1 == flock.size());
 }
 
-void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
+void game_loop(sf::RenderWindow& window, Flock& flock, Parameters& pars,
                unsigned int seed)
 {
+  std::vector<Boid> state{};
   window.setFramerateLimit(pars.get_fps());
+  sf::Texture t;
+  t.loadFromFile("bluesky.jpg.png");
+  sf::Sprite s(t);
 
   while (window.isOpen()) {
     // #1 processing events:
@@ -97,6 +101,23 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
           window.close();
           break;
         }
+      // catch the resize events
+      case sf::Event::Resized:
+        // update the view to the new size of the window
+        if (std::max(pars.get_d_s_pred(), pars.get_d())
+            < std::min(static_cast<double>(event.size.height),
+                       static_cast<double>(event.size.width))) {
+          pars.set_x_max() = static_cast<double>(event.size.width);
+          pars.set_y_max() = static_cast<double>(event.size.height);
+          sf::FloatRect visibleArea(0, 0, pars.get_x_max(), pars.get_y_max());
+          window.setView(sf::View(visibleArea));
+        } else {
+          // window will be resized only if new dimensions are compatible with
+          // distance parameters
+          window.setSize({static_cast<unsigned>(pars.get_x_max()),
+                          static_cast<unsigned>(pars.get_y_max())});
+        }
+        break;
       default:
         break;
       }
@@ -104,14 +125,20 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
 
     // #2 evolving the scene:
     window.clear(sf::Color::White);
-    std::vector<Boid> state{};
+    window.draw(s);
     state = evolve(flock, pars);
     draw_state(window, state);
     // predator can be added by pressing left mouse button
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
       auto mouse_position{sf::Mouse::getPosition(window)};
-      add_predator(Position{mouse_position.x, mouse_position.y}, flock, pars,
-                   seed);
+      // click is valid only if it's within the window
+      if (mouse_position.x >= pars.get_x_min()
+          && mouse_position.x <= pars.get_x_max()
+          && mouse_position.y >= pars.get_y_min()
+          && mouse_position.y <= pars.get_y_max()) {
+        add_predator(Position{mouse_position.x, mouse_position.y}, flock, pars,
+                     seed);
+      }
     }
 
     // #3 displaying the evolved scene:

@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
   try {
     // default values are modified only if an input value is specified
     double angle{310.};
-    double d{45.};
+    double d{55.};
     double d_s{10.};
     double s{4.9};
     double c{.0015};
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     auto show_help{false};
 
     // display width and height
-    double const display_width{.7 * sf::VideoMode::getDesktopMode().width};
-    double const display_height{.7 * sf::VideoMode::getDesktopMode().height};
+    double display_width{.7 * sf::VideoMode::getDesktopMode().width};
+    double display_height{.7 * sf::VideoMode::getDesktopMode().height};
 
     // Parser with multiple option arguments and help option
     auto parser = get_parser(angle, d, d_s, s, c, a, max_speed,
@@ -64,10 +64,10 @@ int main(int argc, char* argv[])
     int const steps{1000 / (delta_t * fps)}; // steps per evolution
     int const fps_limit{1000 / delta_t};
 
-    Parameters const pars{angle,    d,     d_s,       s,
-                          c,        a,     max_speed, min_speed_fraction,
-                          duration, steps, fps,       fps_limit,
-                          N_boids};
+    Parameters pars{angle,    d,     d_s,       s,
+                    c,        a,     max_speed, min_speed_fraction,
+                    duration, steps, fps,       fps_limit,
+                    N_boids};
 
     // obtains seed to pass to random number engine
     std::random_device rd;
