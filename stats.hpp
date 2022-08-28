@@ -1,8 +1,8 @@
 #ifndef STATS_HPP
 #define STATS_HPP
 #include "flock.hpp"
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 struct Result
 {
@@ -13,4 +13,5 @@ struct Result
 Result mean_dist(std::vector<Boid> const& state);
 Result mean_speed(std::vector<Boid> const& state);
 void print_state(std::vector<Boid> const& state);
+void write_data(std::vector<std::vector<Boid>> const& states, std::ofstream& os);
 #endif

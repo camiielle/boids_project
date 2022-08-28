@@ -4,6 +4,7 @@
 #include "parser.hpp"
 #include "stats.hpp"
 
+#include <fstream>
 #include <random>
 
 int main(int argc, char* argv[])
@@ -22,12 +23,13 @@ int main(int argc, char* argv[])
     int steps{3000};
     int prescale{60};
     int N_boids{120};
+    auto save_data{false};
     auto show_help{false};
 
     // Parser with multiple option arguments and help option
     auto parser =
         get_parser(angle, d, d_s, s, c, a, max_speed, min_speed_fraction,
-                   duration, steps, prescale, N_boids, show_help);
+                   duration, steps, prescale, N_boids, save_data, show_help);
 
     // Parses the arguments
     auto result = parser.parse({argc, argv});
@@ -71,10 +73,26 @@ int main(int argc, char* argv[])
     std::cout << "\n AVERAGE DISTANCE:              AVERAGE SPEED: \n\n";
     std::for_each(states.begin(), states.end(), print_state);
 
-    std::cout << '\n' << std::setfill('=') << std::setw(50);
-    std::cout << '\n' << "SUMMARY: Parameters used in the simulation:\n\n";
+    std::cout << '\n' << std::setfill('=') << std::setw(53);
+    std::cout << '\n' << "    SUMMARY: Parameters used in the simulation\n\n";
     print_parameters(pars);
 
+    if (save_data) {
+      std::cout << "\nPlease write name of file data will be saved in, then "
+                   "press ENTER to continue. (.txt "
+                   "extension added automatically).\n";
+      std::string filename;
+      std::getline(std::cin, filename);    // reads until the first newline
+      std::ofstream os{filename + ".txt"}; // opens file for writing
+      if (!os) {
+        std::cerr << "ERROR: Cannot open file\n";
+        return EXIT_FAILURE;
+      } else {
+        write_data(states, os);
+        std::cout << "SUCCESS! Data have been saved to file: " + filename
+                         + ".txt in current directory\n";
+      }
+    }
   } catch (Invalid_Parameter const& par_err) {
     std::cerr << "Invalid Parameter: " << par_err.what() << '\n';
     std::cerr << "use flags -? , -h or --help for input parameters' "

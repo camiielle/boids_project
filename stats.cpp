@@ -1,7 +1,9 @@
 #include "stats.hpp"
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <numeric>
+#include <sstream>
 
 // auxiliary function, calculates sum of pair distances between boid and all
 // others after it in the vector
@@ -78,7 +80,19 @@ void print_state(std::vector<Boid> const& state)
 
   std::cout << std::setprecision(3) << std::fixed << std::setw(8)
             << distance.mean << " \u00b1 " << std::setw(7) << distance.std_dev
-            << std::setw(8) << '|' << std::setw(13)
-            << speed.mean << " \u00b1 " << std::setw(7) << speed.std_dev
-            << '\n';
+            << std::setw(8) << '|' << std::setw(13) << speed.mean << " \u00b1 "
+            << std::setw(7) << speed.std_dev << '\n';
+}
+
+void write_data(std::vector<std::vector<Boid>> const& states, std::ofstream& os)
+{
+  std::ostringstream data;
+  for (auto const& state : states) {
+    Result distance{mean_dist(state)};
+    Result speed{mean_speed(state)};
+    data << std::setprecision(3) << std::fixed << std::setw(9) << distance.mean
+         << std::setw(9) << distance.std_dev << std::setw(9) << speed.mean
+         << std::setw(9) << speed.std_dev << std::endl;
+  }
+  os << data.str();
 }

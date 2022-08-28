@@ -8,7 +8,8 @@
 inline auto get_parser(double& angle, double& d, double& d_s, double& s,
                        double& c, double& a, double& max_speed,
                        double& min_speed_fraction, double& duration, int& steps,
-                       int& prescale, int& N_boids, bool& show_help)
+                       int& prescale, int& N_boids, bool& save_data,
+                       bool& show_help)
 {
   return lyra::cli{
       lyra::help(show_help)
@@ -48,7 +49,10 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "[Default value is 60]")
       | lyra::opt(N_boids, "number-of-boids")["-b"]["--boids"](
           "Set number of boids  - must be greater than 1  [Default value is "
-          "120]")};
+          "120]")
+      | lyra::opt(save_data)["--ON"]("Saves data obtained from statistical "
+                                     "analysis to specified file  [Default is "
+                                     "OFF]")};
 }
 
 // prints summary of values of parameters used in the simulation
