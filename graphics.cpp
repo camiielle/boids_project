@@ -11,10 +11,10 @@ void draw_state(sf::RenderWindow& window, std::vector<Boid> const& state)
   for (Boid const& boid : state) {
     // predators are represented as bigger triangles
     double const scale_fac{(boid.is_pred()) ? 1.5 : 1.};
-    int constexpr half_base{2};   // half of the base of the triangle
-    int constexpr half_height{3}; // half of the height of the triangle
-    sf::Color grey{105, 105, 105, 255};
-    sf::Color orange{235, 149, 50, 255};
+    double constexpr half_base{3.5};   // half of the base of the triangle
+    double constexpr half_height{5.5}; // half of the height of the triangle
+    sf::Color grey{169, 169, 169, 255};
+    sf::Color orange{255, 155, 0, 255};
 
     // each triangle is defined by three vertices
     sf::Vertex top;
@@ -81,7 +81,6 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
                unsigned int seed)
 {
   window.setFramerateLimit(pars.get_fps());
-  std::vector<Boid> state{};
 
   while (window.isOpen()) {
     // #1 processing events:
@@ -105,9 +104,10 @@ void game_loop(sf::RenderWindow& window, Flock& flock, Parameters const& pars,
 
     // #2 evolving the scene:
     window.clear(sf::Color::White);
+    std::vector<Boid> state{};
     state = evolve(flock, pars);
     draw_state(window, state);
-    // predator can be added by pressing left mouse button (pressing,click,)
+    // predator can be added by pressing left mouse button
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
       auto mouse_position{sf::Mouse::getPosition(window)};
       add_predator(Position{mouse_position.x, mouse_position.y}, flock, pars,
