@@ -36,8 +36,12 @@ Velocity& normalize(Velocity& v, double min_speed, double max_speed)
   if (norm(v) >= max_speed) {
     v *= (0.95 * max_speed
           / norm(v)); // setting new speed a little below the max
-  } else if (norm(v) <= min_speed) {
-    v *= 1.05 * min_speed / norm(v); // setting new speed a little above the min
+  }
+  if (norm(v) == 0.) { // setting new speed a little above the min
+    v = Velocity{1., 1.} * (1.05 * min_speed / std::sqrt(2.));
+  }
+  if (norm(v) <= min_speed) {
+    v *= 1.05 * min_speed / norm(v);
   }
   assert(norm(v) > min_speed && norm(v) < max_speed);
   return v;
@@ -82,7 +86,7 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
   double cos{(scalar_prod / (norm(b1.velocity()) * norm(pos_diff)))};
   if (cos
       >= std::cos(pi * angle_of_view
-                  / 360.)) { // coverting half the angle-of-view into radiants
+                  / 360.)) { // converting half the angle-of-view into radiants
     return true;
   } else {
     return false;
@@ -92,7 +96,7 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
 // encourages the boid to stay within rough boundaries in order to keep the
 // flock on screen
 Velocity& bound_position(Boid& b, double x_min, double x_max, double y_min,
-                        double y_max)
+                         double y_max)
 {
   double norm_v{norm(b.velocity())};
   // ifs are not mutually exclusive: a boid could have crossed both the x and y

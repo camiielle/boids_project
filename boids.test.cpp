@@ -79,6 +79,7 @@ TEST_CASE("Testing Position and Velocity")
   Velocity v1{4., 3.};  // oblique vector, speed=5
   Velocity v2{-3., 0.}; // horizontal vector, speed=3
   Velocity v3{0., -7.}; // vertical vector, speed=7
+  Velocity v4{};        // null speed
 
   SUBCASE("testing overloading")
   {
@@ -99,6 +100,19 @@ TEST_CASE("Testing Position and Velocity")
           == doctest::Approx(2.85));
     CHECK(normalize(v3, .5, 7.1) == v3); // speed in range
   }
+  SUBCASE("testing normalize for null velocity")
+  {
+    // testing with different min and max speed:
+    // norm set properly
+    CHECK(norm(normalize(v4, .7, 18)) == doctest::Approx(.735));
+    CHECK(norm(normalize(v4, 3., 20.)) == doctest::Approx(3.15));
+    // direction set properly as well
+    CHECK(normalize(v4, 6., 25.)
+          == Velocity{1., 1.} * (6. * 1.05 / std::sqrt(2.)));
+    CHECK(normalize(v4, 20., 40.)
+          == Velocity{1., 1.} * (20. * 1.05 / std::sqrt(2.)));
+  }
+
   SUBCASE("testing normalize for lower limit")
   {
     CHECK(norm(normalize(v1, 6., 25.)) // speed smaller than min_speed
