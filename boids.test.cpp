@@ -180,7 +180,7 @@ TEST_CASE("Testing Boid")
     CHECK(is_seen(b7, b6, 90.) == false);
   }
 }
-TEST_CASE("testing bound_position")
+TEST_CASE("Testing behavior in corners' proximity")
 {
   Velocity v1{3., 3.};
   Velocity v2{1., 2.};
@@ -212,29 +212,50 @@ TEST_CASE("testing bound_position")
   double xmax{10.};
   double ymax{6.};
 
-  // using both predators and regular boids
-  CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
-  == doctest::Approx(3. - 1.5 * std::sqrt(18.));
-  CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).y())
-  == doctest::Approx(3. - 1.5 * std::sqrt(18.));
-  CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
-  == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
-  CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).y())
-  == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
-  CHECK((bound_position(b2, xmin, xmax, ymin, ymax).x()) // crossed xmax
-        == doctest::Approx(1. - 1.5 * std::sqrt(5.)));
-  CHECK((bound_position(b3, xmin, xmax, ymin, ymax).y()) // crossed ymin
-        == doctest::Approx(-1. + 1.5 * std::sqrt(5.)));
-  CHECK((bound_position(b7, xmin, xmax, ymin, ymax)).x() // crossed xmin
-        == doctest::Approx(1.75));
-  CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).y() // crossed ymax
-        == doctest::Approx(-1.25));
-  CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).x()
-        == 0.); // checking v_x was left unchanged
-  // positioned in one corner: testing leave corner is applied as well since
-  // it's a predator
-  CHECK(bound_position(b5, xmin, xmax, ymin, ymax).x()
-        == doctest::Approx(23.40990258));
-  CHECK(bound_position(b6, xmin, xmax, ymin, ymax) // positioned in the center
-        == v2);
+  SUBCASE("testing in_corner")
+  {
+    Boid b9{{9.5, .5}, v5};
+    Boid b10{{.5, 9.5}, v4, true};
+    CHECK(in_corner(b1, xmax, ymax));  // upper right corner, regular
+    CHECK(in_corner(b10, xmax, ymax)); // upper left corner, predator
+    CHECK(in_corner(b4, xmax, ymax));  // lower left corner, regular
+    CHECK(in_corner(b5, xmax, ymax));  // lower left corner, predator
+    CHECK(in_corner(b9, xmax, ymax));  // lower right corner, regular
+
+    CHECK_FALSE(in_corner(b6, xmax, ymax)); // in the center
+    CHECK_FALSE(in_corner(b2, xmax, ymax)); // crossed xmax but not in corner
+    CHECK_FALSE(in_corner(b7, xmax, ymax)); // crossed xmin but not in corner
+    CHECK_FALSE(in_corner(b8, xmax, ymax)); // crossed ymax but not in corner
+    CHECK_FALSE(in_corner(b3, xmax, ymax)); // crossed yin but not in corner
+  }
+
+  SUBCASE("testing ")
+  SUBCASE("testing bound position")
+  {
+    // using both predators and regular boids
+    CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
+    == doctest::Approx(3. - 1.5 * std::sqrt(18.));
+    CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).y())
+    == doctest::Approx(3. - 1.5 * std::sqrt(18.));
+    CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
+    == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
+    CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).y())
+    == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
+    CHECK((bound_position(b2, xmin, xmax, ymin, ymax).x()) // crossed xmax
+          == doctest::Approx(1. - 1.5 * std::sqrt(5.)));
+    CHECK((bound_position(b3, xmin, xmax, ymin, ymax).y()) // crossed ymin
+          == doctest::Approx(-1. + 1.5 * std::sqrt(5.)));
+    CHECK((bound_position(b7, xmin, xmax, ymin, ymax)).x() // crossed xmin
+          == doctest::Approx(1.75));
+    CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).y() // crossed ymax
+          == doctest::Approx(-1.25));
+    CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).x()
+          == 0.); // checking v_x was left unchanged
+    // positioned in one corner: testing leave corner is applied at the end of
+    // funct, since b8 is a predator
+    CHECK(bound_position(b5, xmin, xmax, ymin, ymax).x()
+          == doctest::Approx(23.40990258));
+    CHECK(bound_position(b6, xmin, xmax, ymin, ymax) // positioned in the center
+          == v2);
+  }
 }

@@ -100,6 +100,8 @@ bool in_corner(Boid const& boid, double x_max, double y_max)
       || (boid.position().x() > .9 * x_max && boid.position().y() < .1 * y_max);
 }
 
+// auxiliary function called at the end of bound position. Sets predator's
+// velocity away from the corners, which represent regular birds' refuge
 void leave_corner(Boid& boid, double x_min, double x_max, double y_min,
                   double y_max)
 {
