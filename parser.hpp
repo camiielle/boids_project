@@ -25,19 +25,19 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "(0.,neighbour-distance/2)  [Default value is 3.5]")
       | lyra::opt(s, "separation-factor")["-s"]["--separation_factor"](
           "Set separation factor - must be in range (0.,5.)  [Default value is "
-          "1.5]")
+          ".7]")
       | lyra::opt(c, "cohesion-factor")["-c"]["--cohesion_factor"](
           "Set cohesion factor - must be in range (0.,5.)  [Default value is "
-          "0.1]")
+          "0.045]")
       | lyra::opt(a, "alignment-factor")["-a"]["--alignment_factor"](
           "Set alignment factor - must be in range (0.,5.)  [Default value is "
-          "1.0]")
+          ".8]")
       | lyra::opt(max_speed, "maximum-speed")["-V"]["--maximum_speed"](
           "Set maximum speed - must be greater than 0.  [Default value is 80.]")
       | lyra::opt(min_speed_fraction,
                   "minimum-speed-fraction")["-v"]["--minimum_speed_fraction"](
           "Set minimum speed as a fraction of maximum speed - must be in range "
-          "(0.,1.)  [Default value is 0.000005]")
+          "(0.,1.)  [Default value is 0.05]")
       | lyra::opt(duration, "duration-of-simulation{s}")["-t"]["--duration"](
           "Set duration of the simulation{s} - must be greater than 0.  "
           "[Default value is 30.]")
@@ -46,7 +46,7 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "[Default value is 3000]")
       | lyra::opt(prescale, "prescale")["-p"]["--prescale"](
           "Print data every [prescale] steps - must be in range (0, steps)  "
-          "[Default value is 60]")
+          "[Default value is 40]")
       | lyra::opt(N_boids, "number-of-boids")["-b"]["--boids"](
           "Set number of boids  - must be greater than 1  [Default value is "
           "120]")
