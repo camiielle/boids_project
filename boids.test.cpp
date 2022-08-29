@@ -229,7 +229,27 @@ TEST_CASE("Testing behavior in corners' proximity")
     CHECK_FALSE(in_corner(b3, xmax, ymax)); // crossed yin but not in corner
   }
 
-  SUBCASE("testing ")
+  SUBCASE("testing leave_corner")
+  { // leave_corner internally asserts boid is a predator
+    Boid b7_p{p7, v5, true};
+    Boid b10{{.0, 5.9}, v4, true};
+    leave_corner(b10, xmin, xmax, ymin, ymax); // upper left corner
+    CHECK(b10.velocity().x()
+          == doctest::Approx((Velocity{2.5, -2.5} * std::sqrt(2.25)).x()));
+    CHECK(b10.velocity().y()
+          == doctest::Approx((Velocity{2.5, -2.5} * std::sqrt(2.25)).y()));
+    leave_corner(b5, xmin, xmax, ymin, ymax); // lower left corner
+    CHECK(b5.velocity().x()
+          == doctest::Approx((Velocity{5., 5.} * std::sqrt(2.25)).x()));
+    CHECK(b5.velocity().y()
+          == doctest::Approx((Velocity{5., 5.} * std::sqrt(2.25)).y()));
+    leave_corner(b7_p, xmin, xmax, ymin, ymax); // crossed xmin but not in
+                                                // corner
+    CHECK(b7_p.velocity() == v5);
+    leave_corner(b6, xmin, xmax, ymin, ymax); // in center
+    CHECK(b6.velocity() == v2);
+  }
+
   SUBCASE("testing bound position")
   {
     // using both predators and regular boids
