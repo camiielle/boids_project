@@ -108,9 +108,9 @@ TEST_CASE("Testing Position and Velocity")
     CHECK(norm(normalize(v4, 3., 20.)) == doctest::Approx(3.15));
     // direction set properly as well
     CHECK(normalize(v4, 6., 25.)
-          == Velocity{1., 1.} * (6. * 1.05 / std::sqrt(2.)));
+          == Velocity{1., 1.} * (6. * 1.05 / sqrt2));
     CHECK(normalize(v4, 20., 40.)
-          == Velocity{1., 1.} * (20. * 1.05 / std::sqrt(2.)));
+          == Velocity{1., 1.} * (20. * 1.05 / sqrt2));
   }
 
   SUBCASE("testing normalize for lower limit")
@@ -258,9 +258,9 @@ TEST_CASE("Testing behavior in corners' proximity")
     CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).y())
     == doctest::Approx(3. - 1.5 * std::sqrt(18.));
     CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
-    == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
+    == doctest::Approx(-1.5 + 3. / sqrt2);
     CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).y())
-    == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
+    == doctest::Approx(-1.5 + 3. / sqrt2);
     CHECK((bound_position(b2, xmin, xmax, ymin, ymax).x()) // crossed xmax
           == doctest::Approx(1. - 1.5 * std::sqrt(5.)));
     CHECK((bound_position(b3, xmin, xmax, ymin, ymax).y()) // crossed ymin

@@ -37,7 +37,7 @@ Velocity& normalize(Velocity& v, double min_speed, double max_speed)
     v *= (0.95 * max_speed / norm(v));
   }
   if (norm(v) == 0.) { // sets direction, sets new speed a little above the min
-    v = Velocity{1., 1.} * (1.05 * min_speed / std::sqrt(2.));
+    v = Velocity{1., 1.} * (1.05 * min_speed / sqrt2);
   }
   if (norm(v) <= min_speed) { // sets new speed a little above the min
     v *= 1.05 * min_speed / norm(v);
@@ -109,22 +109,22 @@ void leave_corner(Boid& boid, double x_min, double x_max, double y_min,
   if (boid.position().x() < x_min + .045 * x_max
       && boid.position().y() < y_min + .045 * y_max) {
     boid.velocity() =
-        Velocity{1., 1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
+        Velocity{1., 1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() < x_min + .045 * x_max
       && boid.position().y() > y_max - .045 * y_max) {
     boid.velocity() =
-        Velocity{1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
+        Velocity{1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() > x_max - .045 * x_max
       && boid.position().y() > y_max - .045 * y_max) {
     boid.velocity() =
-        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
+        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() > x_max - .045 * x_max
       && boid.position().y() < y_min + .045 * y_max) {
     boid.velocity() =
-        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
+        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
 }
 

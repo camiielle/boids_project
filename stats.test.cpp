@@ -27,16 +27,16 @@ TEST_CASE("testing mean distance")
   {
     // four elements
     CHECK(sum_distances(state4[0], state4, N)
-          == doctest::Approx(6. + std::sqrt(2.) * 3.));
+          == doctest::Approx(6. + sqrt2 * 3.));
     CHECK(sum_distances(state4[1], state4, N)
-          == doctest::Approx(3. + std::sqrt(2.) * 3.));
+          == doctest::Approx(3. + sqrt2 * 3.));
     CHECK(sum_distances(state4[2], state4, N) == doctest::Approx(3.));
     CHECK(sum_distances(state4[3], state4, N) == doctest::Approx(0.));
 
     // two elements
     std::vector<Boid> state2A{b1, b3};
     CHECK(sum_distances(state2A[0], state2A, 2)
-          == doctest::Approx(std::sqrt(2.) * 3.));
+          == doctest::Approx(sqrt2 * 3.));
     CHECK(sum_distances(state2A[1], state2A, 2) == doctest::Approx(0.));
 
     // two elements, horizontally aligned
@@ -92,7 +92,7 @@ TEST_CASE("testing mean distance")
   SUBCASE("testing mean_dist")
   {
     // four elements
-    CHECK(mean_dist(state4).mean == doctest::Approx(2. + std::sqrt(2.)));
+    CHECK(mean_dist(state4).mean == doctest::Approx(2. + sqrt2));
     CHECK(mean_dist(state4).std_dev
           == doctest::Approx(std::sqrt(0.4117749006)));
 

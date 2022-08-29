@@ -67,8 +67,8 @@ void add_predator(Position const& position, Flock& flock, Parameters& pars,
   int init_size{flock.size()};
   std::default_random_engine eng(seed);
   std::uniform_real_distribution<double> unidist_v(
-      -pars.get_max_speed() / std::sqrt(2.),
-      pars.get_max_speed() / std::sqrt(2.));
+      -pars.get_max_speed() / sqrt2,
+      pars.get_max_speed() / sqrt2);
   Boid boid{position, {unidist_v(eng), unidist_v(eng)}, true};
   normalize(boid.velocity(), pars.get_min_speed(), pars.get_max_speed());
 

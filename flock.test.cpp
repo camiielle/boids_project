@@ -262,9 +262,9 @@ TEST_CASE("Testing evolve")
           == b1.position().y() + b1.velocity().y() * d_t);
     // bound_position applied to b1
     CHECK(flock.state()[0].velocity().x()
-          == doctest::Approx(1.5 * std::sqrt(2.) + 1));
+          == doctest::Approx(1.5 * sqrt2 + 1));
     CHECK(flock.state()[0].velocity().y()
-          == doctest::Approx(1.5 * std::sqrt(2.) + 1));
+          == doctest::Approx(1.5 * sqrt2 + 1));
 
     CHECK(flock.state()[1].position().x()
           == b2.position().x() + b2.velocity().x() * d_t);
@@ -294,9 +294,9 @@ TEST_CASE("Testing evolve")
     flock.evolve(pars);
 
     CHECK(flock.state()[0].velocity().x()
-          == b1.velocity().x() + 1.5 * std::sqrt(2.));
+          == b1.velocity().x() + 1.5 * sqrt2);
     CHECK(flock.state()[0].velocity().y()
-          == b1.velocity().y() + 1.5 * std::sqrt(2.));
+          == b1.velocity().y() + 1.5 * sqrt2);
 
     CHECK(flock.state()[4].velocity().y() == b5.velocity().y() + 22.5);
     CHECK(flock.state()[4].velocity().x()
