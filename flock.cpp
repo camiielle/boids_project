@@ -184,19 +184,19 @@ Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
   if (in_corner(prey, pars.get_x_max(),
                 pars.get_y_max())) { // corners represent preys' refuge
     return {0., 0.};
-  } else {
-    auto pos_diff{prey.position() - boid.position()};
-    // Predators' look-ahead feature allows them to take into
-    // account the current velocity of prey in addition to its position.
-    Velocity vel{pos_diff.x() + prey.velocity().x(),
-                 pos_diff.y() + prey.velocity().y()};
-    if (norm(vel)) {
-      vel = (vel / norm(vel))
-          * (norm(pos_diff) * (norm(boid.velocity()) / pars.get_max_speed()));
-    }
-    return vel;
   }
+  auto pos_diff{prey.position() - boid.position()};
+  // Predators' look-ahead feature allows them to take into
+  // account the current velocity of prey in addition to its position.
+  Velocity vel{pos_diff.x() + prey.velocity().x(),
+               pos_diff.y() + prey.velocity().y()};
+  if (norm(vel)) {
+    vel = (vel / norm(vel))
+        * (norm(pos_diff) * (norm(boid.velocity()) / pars.get_max_speed()));
+  }
+  return vel;
 }
+
 Boid Flock::solve(Boid const& boid, Parameters const& pars) const
 {
   Velocity d_v{(boid.is_pred())

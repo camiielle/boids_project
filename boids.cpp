@@ -104,46 +104,51 @@ void leave_corner(Boid& boid, double x_min, double x_max, double y_min,
                   double y_max)
 {
   assert(boid.is_pred());
-  if (boid.position().x() < x_min + 28 && boid.position().y() < y_min + 28) {
+  if (boid.position().x() < x_min + .045 * x_max
+      && boid.position().y() < y_min + .045 * y_max) {
     boid.velocity() =
         Velocity{1., 1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
   }
-  if (boid.position().x() < x_min + 28 && boid.position().y() > y_max - 28) {
+  if (boid.position().x() < x_min + .045 * x_max
+      && boid.position().y() > y_max - .045 * y_max) {
     boid.velocity() =
         Velocity{1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
   }
-  if (boid.position().x() > x_max - 28 && boid.position().y() > y_max - 28) {
+  if (boid.position().x() > x_max - .045 * x_max
+      && boid.position().y() > y_max - .045 * y_max) {
     boid.velocity() =
         Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
   }
-  if (boid.position().x() > x_max - 28 && boid.position().y() < y_min + 28) {
+  if (boid.position().x() > x_max - .045 * x_max
+      && boid.position().y() < y_min + .045 * y_max) {
     boid.velocity() =
         Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / std::sqrt(2.);
   }
 }
 
 // encourages the boid to stay within rough boundaries in order to keep the
-// flock on screen
+// flock on screen. Comes into play when boid either crosses border or comes
+// really close to it
 Velocity& bound_position(Boid& boid, double x_min, double x_max, double y_min,
                          double y_max)
 {
   double norm_v{norm(boid.velocity())};
   // ifs are not mutually exclusive: a boid could have crossed both the x and
   // y border
-  if (boid.position().x() < x_min + 8.5) {
+  if (boid.position().x() < x_min + 0.015 * x_max) {
     boid.velocity().x() += norm_v * 1.5;
   }
-  if (boid.position().x() > x_max - 8.5) {
+  if (boid.position().x() > x_max - 0.015 * x_max) {
     boid.velocity().x() -= norm_v * 1.5;
   }
-  if (boid.position().y() < y_min + 8.5) {
+  if (boid.position().y() < y_min + 0.015 * y_max) {
     boid.velocity().y() += norm_v * 1.5;
   }
-  if (boid.position().y() > y_max - 8.5) {
+  if (boid.position().y() > y_max - 0.015 * y_max) {
     boid.velocity().y() -= norm_v * 1.5;
   }
   if (boid.is_pred()) {
-   leave_corner(boid, x_min, x_max, y_min, y_max);
+    leave_corner(boid, x_min, x_max, y_min, y_max);
   }
   return boid.velocity();
 }
