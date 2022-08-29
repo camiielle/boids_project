@@ -214,25 +214,27 @@ TEST_CASE("testing bound_position")
 
   // using both predators and regular boids
   CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
-  == doctest::Approx(3. - 2. * std::sqrt(18.));
+  == doctest::Approx(3. - 1.5 * std::sqrt(18.));
   CHECK((bound_position(b1, xmin, xmax, ymin, ymax)).y())
-  == doctest::Approx(3. - 2. * std::sqrt(18.));
+  == doctest::Approx(3. - 1.5 * std::sqrt(18.));
   CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).x()) // crossed 2 borders
-  == doctest::Approx(-1.5 + 6. / std::sqrt(2.));
+  == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
   CHECK((bound_position(b4, xmin, xmax, ymin, ymax)).y())
-  == doctest::Approx(-1.5 + 6. / std::sqrt(2.));
+  == doctest::Approx(-1.5 + 3. / std::sqrt(2.));
   CHECK((bound_position(b2, xmin, xmax, ymin, ymax).x()) // crossed xmax
-        == doctest::Approx(1. - 2. * std::sqrt(5.)));
+        == doctest::Approx(1. - 1.5 * std::sqrt(5.)));
   CHECK((bound_position(b3, xmin, xmax, ymin, ymax).y()) // crossed ymin
-        == doctest::Approx(-1. + 2. * std::sqrt(5.)));
+        == doctest::Approx(-1. + 1.5 * std::sqrt(5.)));
   CHECK((bound_position(b7, xmin, xmax, ymin, ymax)).x() // crossed xmin
-        == doctest::Approx(3.5));
+        == doctest::Approx(1.75));
   CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).y() // crossed ymax
-        == doctest::Approx(-2.5));
+        == doctest::Approx(-1.25));
   CHECK((bound_position(b8, xmin, xmax, ymin, ymax)).x()
         == 0.); // checking v_x was left unchanged
-  CHECK(bound_position(b5, xmin, xmax, ymin, ymax) // positioned in one corner
-        == b5.velocity());
+  // positioned in one corner: testing leave corner is applied as well since
+  // it's a predator
+  CHECK(bound_position(b5, xmin, xmax, ymin, ymax).x()
+        == doctest::Approx(23.40990258));
   CHECK(bound_position(b6, xmin, xmax, ymin, ymax) // positioned in the center
-        == b6.velocity());
+        == v2);
 }
