@@ -1,6 +1,8 @@
 #include "graphics.hpp"
 #include <random>
 
+// defines all functions responsible of graphics
+
 // draws all boids in state, representing each boid as a triangle
 void draw_state(sf::RenderWindow& window, std::vector<Boid> const& state)
 {
@@ -57,7 +59,7 @@ auto evolve(Flock& flock, Parameters const& pars)
   return flock.state();
 }
 
-// adds pred with position equal to mouse position, random velocity
+// adds pred with position equal to mouse position (if in grid), random velocity
 void add_predator(Position const& position, Flock& flock, Parameters& pars,
                   unsigned int seed)
 {
@@ -67,8 +69,7 @@ void add_predator(Position const& position, Flock& flock, Parameters& pars,
   int init_size{flock.size()};
   std::default_random_engine eng(seed);
   std::uniform_real_distribution<double> unidist_v(
-      -pars.get_max_speed() / sqrt2,
-      pars.get_max_speed() / sqrt2);
+      -pars.get_max_speed() / sqrt2, pars.get_max_speed() / sqrt2);
   Boid boid{position, {unidist_v(eng), unidist_v(eng)}, true};
   normalize(boid.velocity(), pars.get_min_speed(), pars.get_max_speed());
 

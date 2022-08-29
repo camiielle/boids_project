@@ -20,7 +20,7 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           + std::to_string(std::min(display_width, display_height))
           + ")  [Default "
             "value "
-            "is 45.]")
+            "is 55.]")
       | lyra::opt(d_s, "separation-distance")["-d"]["--separation_distance"](
           "Set separation distance - must be in range "
           "(0.,neighbour-distance/2)  [Default value is 10.]")
@@ -34,13 +34,15 @@ inline auto get_parser(double& angle, double& d, double& d_s, double& s,
           "Set alignment factor - must be in range (0.,5.)  [Default value is "
           ".1]")
       | lyra::opt(max_speed, "maximum-speed")["-V"]["--maximum_speed"](
-          "Set maximum speed - must be greater than 0.  [Default value is 500.]")
+          "Set maximum speed - must be greater than 0.  [Default value is "
+          "500.]")
       | lyra::opt(min_speed_fraction,
                   "minimum-speed-fraction")["-v"]["--minimum_speed_fraction"](
           "Set minimum speed as a fraction of maximum speed - must be in range "
           "(0.,1.)  [Default value is 0.5]")
       | lyra::opt(delta_t, "time-interval-of-evolution{ms}")["-t"]["--delta_t"](
-          "Set time interval for each evolution {ms} - must be a positive integer in range (0,125) "
+          "Set time interval for each evolution {ms} - must be a positive "
+          "integer in range (0,125) "
           "[Default value is 1]")
       | lyra::opt(fps, "fps")["-f"]["--fps"](
           "Set frames per second - must be greater than 0 and less than "

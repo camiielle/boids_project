@@ -35,8 +35,7 @@ TEST_CASE("testing mean distance")
 
     // two elements
     std::vector<Boid> state2A{b1, b3};
-    CHECK(sum_distances(state2A[0], state2A, 2)
-          == doctest::Approx(sqrt2 * 3.));
+    CHECK(sum_distances(state2A[0], state2A, 2) == doctest::Approx(sqrt2 * 3.));
     CHECK(sum_distances(state2A[1], state2A, 2) == doctest::Approx(0.));
 
     // two elements, horizontally aligned
@@ -111,8 +110,7 @@ TEST_CASE("testing mean distance")
 
     // other four elements
     CHECK(mean_speed(state4B).mean == doctest::Approx(7.600565));
-    CHECK(mean_speed(state4B).std_dev
-          == doctest::Approx(1.997135175));
+    CHECK(mean_speed(state4B).std_dev == doctest::Approx(1.997135175));
 
     // eight elements
     CHECK(mean_speed(state8).mean == doctest::Approx(5.96048984));

@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     auto show_help{false};
 
     // display width and height
-    double display_width{.7 * sf::VideoMode::getDesktopMode().width};
-    double display_height{.7 * sf::VideoMode::getDesktopMode().height};
+    double const display_width{.7 * sf::VideoMode::getDesktopMode().width};
+    double const display_height{.7 * sf::VideoMode::getDesktopMode().height};
 
     // Parser with multiple option arguments and help option
     auto parser = get_parser(angle, d, d_s, s, c, a, max_speed,

@@ -1,5 +1,9 @@
 #include "boids.hpp"
 
+// defines Vector2D's operators, function normalize, Boid's constructors and
+// auxiliary functions of the main flying rules taking one or more boids as
+// arguments
+
 // Vector2D's overloaded operators
 Vector2D& Vector2D::operator+=(Vector2D const& other)
 {
@@ -77,7 +81,7 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
   if (b1.position() == b2.position()) {
     return true;
   }
-  // calculates angle in range [0 , π] between velocity of b1 and difference
+  // calculates angle in range [0 , π] between b1's velocity b1 and difference
   // of positions between b2 and b1
   auto pos_diff{b2.position() - b1.position()};
   double scalar_prod{pos_diff.x() * b1.velocity().x()
@@ -85,13 +89,15 @@ bool is_seen(Boid const& b1, Boid const& b2, double angle_of_view)
   double cos{(scalar_prod / (norm(b1.velocity()) * norm(pos_diff)))};
   if (cos
       >= std::cos(pi * angle_of_view
-                  / 360.)) { // converting half the angle-of-view into radiants
+                  / 360.)) // converting half the angle-of-view into radiants
+  {
     return true;
   } else {
     return false;
   }
 }
 
+// auxiliary function returning true if boid is in one of the 4 corners
 bool in_corner(Boid const& boid, double x_max, double y_max)
 {
   return (boid.position().x() < .1 * x_max && boid.position().y() < .1 * y_max)
@@ -100,31 +106,28 @@ bool in_corner(Boid const& boid, double x_max, double y_max)
       || (boid.position().x() > .9 * x_max && boid.position().y() < .1 * y_max);
 }
 
-// auxiliary function called at the end of bound position. Sets predator's
-// velocity away from the corners, which represent regular birds' refuge
+// auxiliary function called at the end of bound_position. Sets predator's
+// velocity away from the corners, since they represent regular birds' refuge
 void leave_corner(Boid& boid, double x_min, double x_max, double y_min,
                   double y_max)
 {
   assert(boid.is_pred());
+
   if (boid.position().x() < x_min + .045 * x_max
       && boid.position().y() < y_min + .045 * y_max) {
-    boid.velocity() =
-        Velocity{1., 1.} * 2.5 * norm(boid.velocity()) / sqrt2;
+    boid.velocity() = Velocity{1., 1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() < x_min + .045 * x_max
       && boid.position().y() > y_max - .045 * y_max) {
-    boid.velocity() =
-        Velocity{1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
+    boid.velocity() = Velocity{1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() > x_max - .045 * x_max
       && boid.position().y() > y_max - .045 * y_max) {
-    boid.velocity() =
-        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
+    boid.velocity() = Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
   if (boid.position().x() > x_max - .045 * x_max
       && boid.position().y() < y_min + .045 * y_max) {
-    boid.velocity() =
-        Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
+    boid.velocity() = Velocity{-1., -1.} * 2.5 * norm(boid.velocity()) / sqrt2;
   }
 }
 

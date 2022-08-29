@@ -1,4 +1,3 @@
-// defines class Parameters, whose constructor validates input
 #ifndef PARAMETERS_HPP
 #define PARAMETERS_HPP
 
@@ -7,6 +6,9 @@
 #include <cassert>
 #include <stdexcept>
 #include <string>
+
+// defines class Parameters, whose constructor validates input, and its
+// exception handling
 
 class Invalid_Parameter : public std::runtime_error
 {
@@ -95,7 +97,7 @@ class Parameters
       , prescale_or_fps_limit_{prescale_or_fps_limit}
       , N_boids_{N_boids}
       , d_s_pred_{7. * d_s} // boids' separation rule from predators has larger
-      , s_pred_{10.5 * s}    // separation distance and highest separation factor
+      , s_pred_{10.5 * s}   // separation distance and highest separation factor
 
   {
     is_in_range(angle_, 0., 360., "angle-of-view");

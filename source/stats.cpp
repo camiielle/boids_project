@@ -5,6 +5,8 @@
 #include <numeric>
 #include <sstream>
 
+// defines functions for analyzing, printing and saving data
+
 // auxiliary function, calculates sum of pair distances between boid and all
 // others after it in the vector
 double sum_distances(Boid const& boid, std::vector<Boid> const& state, int N)
@@ -73,6 +75,7 @@ Result mean_speed(std::vector<Boid> const& state)
   return {mean_speed, std_dev};
 }
 
+// prints calculated data to standard output
 void print_state(std::vector<Boid> const& state)
 {
   Result distance{mean_dist(state)};
@@ -84,7 +87,7 @@ void print_state(std::vector<Boid> const& state)
             << std::setw(7) << speed.std_dev << '\n';
 }
 
-// writes data from the analysis to file indicated by user
+// writes data obtained from the analysis to file indicated by user
 void write_data(std::vector<std::vector<Boid>> const& states)
 {
   std::cout << "\nPlease write name of file data will be saved in, then "

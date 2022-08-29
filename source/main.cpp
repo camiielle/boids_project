@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
     simulate(flock, pars, states);
 
     // data analysis and printing
-    std::cout << "\n Report for each of the stored states:\n";
-    std::cout << "\n AVERAGE DISTANCE:              AVERAGE SPEED: \n\n";
+    std::cout << "\n  Report for each of the stored states:\n";
+    std::cout << "\n  AVERAGE DISTANCE:              AVERAGE SPEED: \n\n";
     std::for_each(states.begin(), states.end(), print_state);
 
     std::cout << '\n' << std::setfill('=') << std::setw(53);

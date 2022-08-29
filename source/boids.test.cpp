@@ -10,7 +10,7 @@ TEST_CASE("testing Vector2D")
   Vector2D v3{};
   Vector2D v4{-2., -4.};
   double s1 = 2.5;
-  double s2 = -3;
+  double s2 = -2;
   double s3 = 1.;
 
   SUBCASE("testing modifying-value operators")
@@ -34,14 +34,16 @@ TEST_CASE("testing Vector2D")
     }
     SUBCASE("operator /=")
     {
-      CHECK((v1 /= s1) == Vector2D{.8, 1.6}); // positive value
-      CHECK((v2 /= s3) == v2);                // negative value
+      CHECK((v1 /= s1) == Vector2D{.8, 1.6});  // positive value
+      CHECK((v1 /= s2) == Vector2D{-.4, -.8}); // negative value
+      CHECK((v2 /= s3) == v2);                 // division by 1
     }
 
     SUBCASE("operator *=")
     {
-      CHECK((v1 *= s1) == Vector2D{5., 10.});   // positive value
-      CHECK((v2 *= s2) == Vector2D{15., -12.}); // negative value
+      CHECK((v1 *= s1) == Vector2D{5., 10.});  // positive value
+      CHECK((v2 *= s2) == Vector2D{10., -8.}); // negative value
+      CHECK((v2 *= s3) == v2);                 // multiplication by 1
     }
   }
 
@@ -107,10 +109,8 @@ TEST_CASE("Testing Position and Velocity")
     CHECK(norm(normalize(v4, .7, 18)) == doctest::Approx(.735));
     CHECK(norm(normalize(v4, 3., 20.)) == doctest::Approx(3.15));
     // direction set properly as well
-    CHECK(normalize(v4, 6., 25.)
-          == Velocity{1., 1.} * (6. * 1.05 / sqrt2));
-    CHECK(normalize(v4, 20., 40.)
-          == Velocity{1., 1.} * (20. * 1.05 / sqrt2));
+    CHECK(normalize(v4, 6., 25.) == Velocity{1., 1.} * (6. * 1.05 / sqrt2));
+    CHECK(normalize(v4, 20., 40.) == Velocity{1., 1.} * (20. * 1.05 / sqrt2));
   }
 
   SUBCASE("testing normalize for lower limit")

@@ -28,8 +28,7 @@ TEST_CASE("testing rules' auxiliary functions")
   Flock flock{boids};
 
   SUBCASE("testing neighbors")
-  {
-    // d is 2.
+  { // d is 2.
     std::vector<Boid> nbrs;
     CHECK((neighbours(b1, flock, nbrs, 180., 2.)).size()
           == 3u);                               // all regular neighbours copied
@@ -48,9 +47,9 @@ TEST_CASE("testing rules' auxiliary functions")
     CHECK((neighbours(b7, flock, nbrs, 180., 2.)).size()
           == 1u); // regular with no neighbours
   }
+
   SUBCASE("testing predators")
-  {
-    // d_s_pred is 2.
+  { // d_s_pred is 2.
     std::vector<Boid> preds;
     CHECK((predators(b1, flock, preds, 180., 2.)).size()
           == 2u);             // all predators copied
@@ -66,9 +65,9 @@ TEST_CASE("testing rules' auxiliary functions")
     CHECK((predators(b7, flock, preds, 180., .5)).size()
           == 0u); // regular with no predators
   }
+
   SUBCASE("testing competitors")
-  {
-    // d_s is 6.
+  { // d_s is 6.
     std::vector<Boid> comps;
     CHECK((competitors(b6_p, flock, comps, 240., 6.)).size()
           == 3u); // all competitors were copied
@@ -87,6 +86,7 @@ TEST_CASE("testing rules' auxiliary functions")
     CHECK((competitors(b4_p, flock, comps, 240., .5)).size()
           == 1u); // predator with no competitors
   }
+
   SUBCASE("testing find_prey")
   {
     boids.erase((boids.end()) - 3);   // erasing b6
@@ -125,7 +125,7 @@ TEST_CASE("testing rules' auxiliary functions")
     flock2.push_back(b9_p);
     Boid prey4{find_prey(b9_p, flock2,
                          220.)}; // predators and regulars in sight, closer
-                                 // regular NOT coinciding with any pred
+                                 // regular NOT coinciding with any predator
     CHECK_FALSE(prey4.is_pred());
     CHECK(prey4.position() == b3.position());
     CHECK(prey4.velocity() == b3.velocity());
@@ -147,56 +147,54 @@ TEST_CASE("Testing flying rules")
   Boid b8{{6.5, 7.}, {0., -6.}};
   Boid b9_p{{10., 11.}, {1., 1.}, true};
   Flock flock{std::vector<Boid>{b1_p, b2, b3_p, b4_p, b5, b6_p, b7, b8, b9_p}};
+
   SUBCASE("testing separation")
   {
-    CHECK(separation(b1_p, flock, pars)
-          == Velocity{0., 0.}); // pred with no competitors nor preys
-    CHECK(
-        separation(b2, flock, pars)
-        == Velocity{0., 0.}); // regular with no predators nor close neighbours
-    CHECK(separation(b3_p, flock, pars)
-          == Velocity{0., 0.}); // pred with no prey, no competitors
-    CHECK(separation(b4_p, flock, pars)
-          == Velocity{0., 0.}); // pred with prey, no competitor
+    // pred with no competitors nor preys
+    CHECK(separation(b1_p, flock, pars) == Velocity{0., 0.});
+    // regular with no predators nor close neighbours
+    CHECK(separation(b2, flock, pars) == Velocity{0., 0.});
+    // pred with no prey, no competitors
+    CHECK(separation(b3_p, flock, pars) == Velocity{0., 0.});
+    // pred with prey, no competitor
+    CHECK(separation(b4_p, flock, pars) == Velocity{0., 0.});
+    // regular with 4 predators, no close neighbours
     CHECK(separation(b5, flock, pars)
-          == Velocity{2., 9.}
-                 * (-pars.get_s_pred())); // regular with 4 predators, no
-                                          // close neighbours
-    CHECK(separation(b6_p, flock, pars)
-          == Velocity{0., 0.}); // pred with prey, no competitor
+          == Velocity{2., 9.} * (-pars.get_s_pred()));
+    // pred with prey, no competitor
+    CHECK(separation(b6_p, flock, pars) == Velocity{0., 0.});
+    // regular with 3 predators, 2 close neighbours
     CHECK(separation(b7, flock, pars)
           == Velocity{2., 13.} * (-pars.get_s_pred())
-                 + Velocity{-1.5, 1.}
-                       * (-pars.get_s())); // regular with 3 predators, 2 close
-                                           // neighbours
-    CHECK(separation(b8, flock, pars)
-          == Velocity{1.5, 0.}
-                 * (-pars.get_s())); // regular with no preds, 1 close neighbour
-    CHECK(separation(b9_p, flock, pars)
-          == Velocity{0., 1.}
-                 * (-pars.get_s())); // pred with no prey, 1 competitor
+                 + Velocity{-1.5, 1.} * (-pars.get_s()));
+    // regular with no preds, 1 close neighbour
+    CHECK(separation(b8, flock, pars) == Velocity{1.5, 0.} * (-pars.get_s()));
+    // pred with no prey, 1 competitor
+    CHECK(separation(b9_p, flock, pars) == Velocity{0., 1.} * (-pars.get_s()));
   }
+
   SUBCASE("testing cohesion")
   {
     Boid b10{{7.5, 6.5}, {-1., 1.}};
     Boid b11{{-7., -10.5}, {-3., 0.}};
     flock.push_back(b10);
     flock.push_back(b11);
-    CHECK((cohesion(b2, flock, pars))
-          == Velocity{0., 0.}); // regular, no neighbours
-    CHECK((cohesion(b5, flock, pars))
-          == Velocity{0., 0.}); // regular, no neighbours (the 4 predators are
-                                // not affecting cohesion)
-    CHECK((cohesion(b8, flock, pars))
-          == Velocity{1.25, -.25}); // regular, 2 neighbours
-    CHECK((cohesion(b7, flock, pars))
-          == Velocity{-.75, .5});                  // regular, 2 neighbours
-    CHECK((cohesion(b10, flock, pars)).x() == 0.); // regular, 3 neighbours
-    CHECK((cohesion(b10, flock, pars)).y()
-          == doctest::Approx(5. / 6.)); // regular, 3 neighbours
-    CHECK((cohesion(b11, flock, pars))
-          == Velocity{-1., -1.5}); // regular, 1 neighbour
+    // regular, no neighbours
+    CHECK((cohesion(b2, flock, pars)) == Velocity{0., 0.});
+    // regular, no neighbours (the 4 predators are not affecting cohesion)
+    CHECK((cohesion(b5, flock, pars)) == Velocity{0., 0.});
+    // regular, 2 neighbours
+    CHECK((cohesion(b8, flock, pars)) == Velocity{1.25, -.25});
+    // regular, 2 neighbours
+    CHECK((cohesion(b7, flock, pars)) == Velocity{-.75, .5});
+    // regular, 3 neighbours
+    CHECK((cohesion(b10, flock, pars)).x() == 0.);
+    // regular, 3 neighbours
+    CHECK((cohesion(b10, flock, pars)).y() == doctest::Approx(5. / 6.));
+    // regular, 1 neighbour
+    CHECK((cohesion(b11, flock, pars)) == Velocity{-1., -1.5});
   }
+
   SUBCASE("testing seek")
   {
     CHECK(seek(b1_p, flock, pars) == Velocity{0., 0.}); // predator with no prey
@@ -261,10 +259,8 @@ TEST_CASE("Testing evolve")
     CHECK(flock.state()[0].position().y()
           == b1.position().y() + b1.velocity().y() * d_t);
     // bound_position applied to b1
-    CHECK(flock.state()[0].velocity().x()
-          == doctest::Approx(1.5 * sqrt2 + 1));
-    CHECK(flock.state()[0].velocity().y()
-          == doctest::Approx(1.5 * sqrt2 + 1));
+    CHECK(flock.state()[0].velocity().x() == doctest::Approx(1.5 * sqrt2 + 1));
+    CHECK(flock.state()[0].velocity().y() == doctest::Approx(1.5 * sqrt2 + 1));
 
     CHECK(flock.state()[1].position().x()
           == b2.position().x() + b2.velocity().x() * d_t);
@@ -293,10 +289,8 @@ TEST_CASE("Testing evolve")
     Flock flock{boids};
     flock.evolve(pars);
 
-    CHECK(flock.state()[0].velocity().x()
-          == b1.velocity().x() + 1.5 * sqrt2);
-    CHECK(flock.state()[0].velocity().y()
-          == b1.velocity().y() + 1.5 * sqrt2);
+    CHECK(flock.state()[0].velocity().x() == b1.velocity().x() + 1.5 * sqrt2);
+    CHECK(flock.state()[0].velocity().y() == b1.velocity().y() + 1.5 * sqrt2);
 
     CHECK(flock.state()[4].velocity().y() == b5.velocity().y() + 22.5);
     CHECK(flock.state()[4].velocity().x()

@@ -19,7 +19,6 @@ class Flock
     // parameter N_boids was verified by the constructor of Parameters to be > 1
     assert(flock_.size() > 1);
   }
-
   // clang-format off
   bool empty() const{ return flock_.empty(); }
   //NB not risking narrowing with int as return type since parameter N_boids is an int

@@ -5,6 +5,8 @@
 #include <cmath>
 #include <utility>
 
+// defines Vector2D, Position, Velocity and Boid (user-defined types)
+
 constexpr double pi{3.14159265358979323846};
 constexpr double sqrt2{1.41421356237309504880};
 
@@ -73,7 +75,7 @@ class Boid
 {
   Position p_;
   Velocity v_;
-  bool is_pred_ = false;
+  bool is_pred_{false};
 
  public:
   explicit Boid(Position p, Velocity v, bool is_pred);

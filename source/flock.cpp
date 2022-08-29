@@ -4,7 +4,8 @@
 #include <numeric>
 #include <random>
 
-// defining flocks' flying rules:
+// defining flocks' flying rules (different for regular boid and predator)
+// functions to perform simulation (methods solve and evolve, fill, simulate)
 
 // fills vector with neighbours of boid (inserting also boid itself)
 std::vector<Boid>& neighbours(Boid const& boid, Flock const& flock,
@@ -18,7 +19,7 @@ std::vector<Boid>& neighbours(Boid const& boid, Flock const& flock,
                  return (!(other.is_pred())) && (is_seen(boid, other, angle))
                      && (distance(boid, other) < d);
                });
-  // a regular boids is a neighbour if close enough and in the field of view
+  // a regular boid is a neighbour if close enough and in the field of view
   return nbrs;
 }
 // NB: function neighbour can be used to obtain close-neighbours as well, simply
@@ -56,7 +57,7 @@ std::vector<Boid>& competitors(Boid const& boid, Flock const& flock,
                  return ((other.is_pred()) && (is_seen(boid, other, angle))
                          && (distance(boid, other) < d_s));
                });
-  // predators are peers: they separate with the regular separation factor
+  // predators are peers: they separate with regular separation factor
   return comps;
 }
 
@@ -90,8 +91,8 @@ Boid const& find_prey(Boid const& boid, Flock const& flock, double angle)
   }
 }
 
-// the fact that boid itself is inserted in comps or close_nbrs vectors does not
-// influence sum, since (boid.position()-boid.position()) equals {0.,0.}
+// NB: the fact that boid itself is inserted in comps or close_nbrs vectors does
+// not influence sum, since (boid.position()-boid.position()) equals {0.,0.}
 Velocity separation(Boid const& boid, Flock const& flock,
                     Parameters const& pars)
 {
@@ -132,8 +133,8 @@ Velocity alignment(Boid const& boid, Flock const& flock, Parameters const& pars)
   std::vector<Boid> nbrs{};
   // note that neighbours will assert internally that boid is not a pred
   neighbours(boid, flock, nbrs, pars.get_angle(), pars.get_d());
-  int vec_size{static_cast<int>(nbrs.size())}; // not risking narrowing since
-  // N_nbrs < N_boids which is an int
+  // not risking narrowing since N_nbrs < N_boids, which is an int
+  int vec_size{static_cast<int>(nbrs.size())};
   if (vec_size == 1) { // if nbrs has only 1 element, it's boid itself
     return {0., 0.};
   } else {
@@ -144,7 +145,7 @@ Velocity alignment(Boid const& boid, Flock const& flock, Parameters const& pars)
                                          * (pars.get_a() / (vec_size - 1));
                                   })};
   }
-  // NB the formula used here is equivalent to the one subtracting boid's
+  // NB: the formula used here is equivalent to the one subtracting boid's
   // velocity to the mean of others' velocities, with the advantage of not
   // requiring erasing boid from nbrs
 }
@@ -177,14 +178,15 @@ Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
   // note that find_prey will assert internally that boid is a pred
   auto prey{find_prey(boid, flock, pars.get_angle())};
 
-  if (prey.is_pred()) { // this means find_prey returned boid itself (i.e. no
-                        // preys in sight)
+  if (prey.is_pred()) {
+    // this means find_prey returned boid itself (i.e. no preys in sight)
     return {0., 0.};
   }
-  if (in_corner(prey, pars.get_x_max(),
-                pars.get_y_max())) { // corners represent preys' refuge
+  if (in_corner(prey, pars.get_x_max(), pars.get_y_max())) {
+    // corners represent preys' refuge
     return {0., 0.};
   }
+
   auto pos_diff{prey.position() - boid.position()};
   // Predators' look-ahead feature allows them to take into
   // account the current velocity of prey in addition to its position.
@@ -199,6 +201,7 @@ Velocity seek(Boid const& boid, Flock const& flock, Parameters const& pars)
 
 Boid Flock::solve(Boid const& boid, Parameters const& pars) const
 {
+  // different flying rules for predator vs. regular boid
   Velocity d_v{(boid.is_pred())
                    ? (separation(boid, *this, pars) + seek(boid, *this, pars))
                    : (separation(boid, *this, pars)
@@ -218,8 +221,8 @@ Boid Flock::solve(Boid const& boid, Parameters const& pars) const
   // Boid returned from solve is always "valid", i.e bound_position has been
   // applied and speed is within limits:
   bound_position(b_f, pars.get_x_min(), pars.get_x_max(), pars.get_y_min(),
-                 pars.get_y_max()),
-      normalize(b_f.velocity(), pars.get_min_speed(), pars.get_max_speed());
+                 pars.get_y_max());
+  normalize(b_f.velocity(), pars.get_min_speed(), pars.get_max_speed());
   return b_f;
 }
 
@@ -259,8 +262,7 @@ std::vector<Boid>& fill(std::vector<Boid>& boids, Parameters const& pars,
   std::uniform_real_distribution<double> unidist_py(pars.get_y_min(),
                                                     pars.get_y_max());
   std::uniform_real_distribution<double> unidist_v(
-      -pars.get_max_speed() / std::sqrt(2.),
-      pars.get_max_speed() / std::sqrt(2.));
+      -pars.get_max_speed() / sqrt2, pars.get_max_speed() / sqrt2);
 
   std::generate_n(std::back_inserter(boids), pars.get_N_boids(), [&]() {
     return Boid{{unidist_px(eng), unidist_py(eng)},
